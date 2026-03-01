@@ -15,13 +15,38 @@ suitcardtuple=('Diamond','Hearts','clubs','spades')
 
 #The use of abstraction could have been used here as we could shorten down long words like Diamond into the letter 'D' instead but this may confuse people later on and we want the game to be as clear as possible.
 
+def Probability():
+    None
 
+
+
+def card_list(numcardtuple,suitcardtuple):
+    rows, column = 52 , 2
+    cardlist=[[0 for x in range(column)] for y in range(rows)]
+
+    position=0
+    for current_suit in suitcardtuple:
+        for x in range(len(numcardtuple)):
+            position+=1
+            cardlist[position-1][1]= current_suit
+            
+
+    for current_num in numcardtuple:
+        for rep_num in range(4):
+            for y in range(rows):
+                index_value_current_num=numcardtuple.index(current_num)
+                cardlist[index_value_current_num+(13*rep_num)][0]=current_num
+
+
+
+    print(cardlist)
+card_list(numcardtuple,suitcardtuple)
 
 def simulation():
     pygame.init()
 
     # CREATING CANVAS
-    canvas = pygame.display.set_mode((500, 500))
+    canvas = pygame.display.set_mode((1280, 720))
 
     # TITLE OF CANVAS
     pygame.display.set_caption("poker Simulation")
@@ -32,3 +57,5 @@ def simulation():
             if event.type == pygame.QUIT:
                 exit = True
         pygame.display.update()
+
+simulation()
