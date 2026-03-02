@@ -66,23 +66,47 @@ def simulation():
     background_home_color=(0, 100, 0)
     black=(0,0,0)
     white=(255,255,255)
-    Font_home=pygame.font.SysFont('Arial.ttf',20)
+    Font_home=pygame.font.SysFont('Arial.ttf',50)
+    Font_home_title=pygame.font.SysFont('Arial.ttf',300)
     canvas.fill(background_home_color)
-    button_start_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
-    button_start_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
-    button_start_text=Font_home.render('start',)
+
+    title_Home_text=Font_home_title.render('Poker', True, black)
+    title_Home_text_rectangle = title_Home_text.get_rect()
+    title_Home_text_rectangle.center = (665,150)
+    canvas.blit(title_Home_text,title_Home_text_rectangle)
+
+    sim_text=Font_home.render('Simulator', True, black)
+    sim_text_rectangle = sim_text.get_rect()
+    sim_text_rectangle.center = (80,25)
+    canvas.blit(sim_text,sim_text_rectangle)
 
 
+
+
+    button_Play_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
+    button_Play_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
+    button_Play_text=Font_home.render('Play', True, black)
+    button_Play_text_rectangle = button_Play_text.get_rect()
+    button_Play_text_rectangle.center = (665,350)
+    canvas.blit(button_Play_text,button_Play_text_rectangle)
 
 
     button_settings_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
     button_settings_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,455,190,90])
+    button_Settings_text=Font_home.render('Settings', True, black)
+    button_Settings_text_rectangle = button_Settings_text.get_rect()
+    button_Settings_text_rectangle.center = (665,500)
+    canvas.blit(button_Settings_text,button_Settings_text_rectangle)
 
 
 
 
     button_quit_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
     button_quit_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,605,190,90])
+    button_Quit_text=Font_home.render('Quit', True, black)
+    button_Quit_text_rectangle = button_Quit_text.get_rect()
+    button_Quit_text_rectangle.center = (665,650)
+    canvas.blit(button_Quit_text,button_Quit_text_rectangle)
 
 
 
