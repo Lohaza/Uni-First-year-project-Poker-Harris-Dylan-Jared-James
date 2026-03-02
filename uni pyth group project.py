@@ -51,7 +51,7 @@ def card_list(numcardtuple,suitcardtuple):
                 cardlist[index_value_current_num+(13*rep_num)][0]=current_num
     return cardlist
 
-draw_hand(numcardtuple,suitcardtuple)
+print(draw_hand(numcardtuple,suitcardtuple))
 
 def simulation():
     pygame.init()
@@ -65,10 +65,28 @@ def simulation():
 
     background_home_color=(0, 100, 0)
     black=(0,0,0)
+    white=(255,255,255)
+    Font_home=pygame.font.SysFont('Arial.ttf',20)
     canvas.fill(background_home_color)
-    pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
-    pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
-    pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
+    button_start_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
+    button_start_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
+    button_start_text=Font_home.render('start',)
+
+
+
+
+    button_settings_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
+    button_settings_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,455,190,90])
+
+
+
+
+    button_quit_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
+    button_quit_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,605,190,90])
+
+
+
+
     pygame.display.flip()
 
     while not exit:
