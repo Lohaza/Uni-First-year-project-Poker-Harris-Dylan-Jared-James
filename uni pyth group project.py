@@ -55,6 +55,7 @@ print(draw_hand(numcardtuple,suitcardtuple))
 
 def simulation():
     pygame.init()
+    button_change_Play_Bool= False
 
     canvas = pygame.display.set_mode((1280, 720))
 
@@ -73,14 +74,13 @@ def simulation():
     title_Home_text_rectangle.center = (665,150)
     canvas.blit(title_Home_text,title_Home_text_rectangle)
 
+
     sim_text=Font_home.render('Simulator', True, black)
     sim_text_rectangle = sim_text.get_rect()
     sim_text_rectangle.center = (80,25)
     canvas.blit(sim_text,sim_text_rectangle)
 
-
-
-
+ 
     button_Play_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
     button_Play_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
     button_Play_text=Font_home.render('Play', True, black)
@@ -110,12 +110,63 @@ def simulation():
 
 
     pygame.display.flip()
+    
 
     while not exit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit = True
+
         mouse=pygame.mouse.get_pos()
+        if 565 <= mouse[0] <= 765 and 300 <= mouse[1] <= 400 :
+            button_Play_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,300,200,100])
+            button_Play_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,305,190,90])
+            button_Play_text=Font_home.render('Play', True, white)
+            button_Play_text_rectangle = button_Play_text.get_rect()
+            button_Play_text_rectangle.center = (665,350)
+            canvas.blit(button_Play_text,button_Play_text_rectangle)
+        else:
+            button_Play_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
+            button_Play_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
+            button_Play_text=Font_home.render('Play', True, black)
+            button_Play_text_rectangle = button_Play_text.get_rect()
+            button_Play_text_rectangle.center = (665,350)
+            canvas.blit(button_Play_text,button_Play_text_rectangle)
+        
+        if 565 <= mouse[0] <= 765 and 450 <= mouse[1] <= 550 : 
+            button_settings_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,450,200,100])
+            button_settings_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,455,190,90])
+            button_Settings_text=Font_home.render('Settings', True, white)
+            button_Settings_text_rectangle = button_Settings_text.get_rect()
+            button_Settings_text_rectangle.center = (665,500)
+            canvas.blit(button_Settings_text,button_Settings_text_rectangle)
+        else:
+            button_settings_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
+            button_settings_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,455,190,90])
+            button_Settings_text=Font_home.render('Settings', True, black)
+            button_Settings_text_rectangle = button_Settings_text.get_rect()
+            button_Settings_text_rectangle.center = (665,500)
+            canvas.blit(button_Settings_text,button_Settings_text_rectangle)
+
+
+        if 565 <= mouse[0] <= 765 and 600 <= mouse[1] <= 750 :
+            button_quit_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,600,200,100])
+            button_quit_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,605,190,90])
+            button_Quit_text=Font_home.render('Quit', True, white)
+            button_Quit_text_rectangle = button_Quit_text.get_rect()
+            button_Quit_text_rectangle.center = (665,650)
+            canvas.blit(button_Quit_text,button_Quit_text_rectangle)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                exit=True
+        else:
+            button_quit_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
+            button_quit_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,605,190,90])
+            button_Quit_text=Font_home.render('Quit', True, black)
+            button_Quit_text_rectangle = button_Quit_text.get_rect()
+            button_Quit_text_rectangle.center = (665,650)
+            canvas.blit(button_Quit_text,button_Quit_text_rectangle)
+
+
         pygame.display.update()
 
 simulation()
