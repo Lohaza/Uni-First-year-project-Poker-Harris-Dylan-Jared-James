@@ -56,10 +56,8 @@ print(draw_hand(numcardtuple,suitcardtuple))
 def simulation():
     pygame.init()
 
-    # CREATING CANVAS
     canvas = pygame.display.set_mode((1280, 720))
 
-    # TITLE OF CANVAS
     pygame.display.set_caption("poker Simulation")
     exit = False
 
@@ -118,7 +116,6 @@ def simulation():
             if event.type == pygame.QUIT:
                 exit = True
         mouse=pygame.mouse.get_pos()
-        print(mouse)
         pygame.display.update()
 
 simulation()
