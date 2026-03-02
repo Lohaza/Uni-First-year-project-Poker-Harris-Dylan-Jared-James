@@ -117,6 +117,8 @@ def simulation():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit = True
+        mouse=pygame.mouse.get_pos()
+        print(mouse)
         pygame.display.update()
 
 simulation()
