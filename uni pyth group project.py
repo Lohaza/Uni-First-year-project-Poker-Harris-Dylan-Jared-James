@@ -1,4 +1,5 @@
 import pygame
+import random
 
 """
 I have created 2 tuples, tuples are non mutable lists which means that they can NOT change at run time.
@@ -18,9 +19,21 @@ suitcardtuple=('Diamond','Hearts','clubs','spades')
 def Probability():
     None
 
+def draw_hand(numcardtuple,suitcardtuple):
+    current_card_list=card_list(numcardtuple,suitcardtuple)
+    draw_card_one=random.choice(current_card_list)
+    current_card_list.remove(draw_card_one)
+    draw_card_two=random.choice(current_card_list)
+    current_card_list.remove(draw_card_two)
+    return draw_card_one,draw_card_two
 
+    
 
 def card_list(numcardtuple,suitcardtuple):
+    """
+    This function will take the two tuples of the suits and the card numbers to generate a 2 dimentional list.
+    
+    """
     rows, column = 52 , 2
     cardlist=[[0 for x in range(column)] for y in range(rows)]
 
@@ -36,11 +49,9 @@ def card_list(numcardtuple,suitcardtuple):
             for y in range(rows):
                 index_value_current_num=numcardtuple.index(current_num)
                 cardlist[index_value_current_num+(13*rep_num)][0]=current_num
+    return cardlist
 
-
-
-    print(cardlist)
-card_list(numcardtuple,suitcardtuple)
+draw_hand(numcardtuple,suitcardtuple)
 
 def simulation():
     pygame.init()
