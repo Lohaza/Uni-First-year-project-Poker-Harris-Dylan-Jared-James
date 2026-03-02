@@ -14,6 +14,7 @@ the game the code will create a fresh new list for them each game from these 2 t
 numcardtuple = ('Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King')
 suitcardtuple=('Diamond','Hearts','clubs','spades')
 
+
 #The use of abstraction could have been used here as we could shorten down long words like Diamond into the letter 'D' instead but this may confuse people later on and we want the game to be as clear as possible.
 
 def Probability():
@@ -54,58 +55,12 @@ def card_list(numcardtuple,suitcardtuple):
 print(draw_hand(numcardtuple,suitcardtuple))
 
 def simulation():
+    menu=True
     pygame.init()
-    button_change_Play_Bool= False
-
     canvas = pygame.display.set_mode((1280, 720))
 
     pygame.display.set_caption("poker Simulation")
     exit = False
-
-    background_home_color=(0, 100, 0)
-    black=(0,0,0)
-    white=(255,255,255)
-    Font_home=pygame.font.SysFont('Arial.ttf',50)
-    Font_home_title=pygame.font.SysFont('Arial.ttf',300)
-    canvas.fill(background_home_color)
-
-    title_Home_text=Font_home_title.render('Poker', True, black)
-    title_Home_text_rectangle = title_Home_text.get_rect()
-    title_Home_text_rectangle.center = (665,150)
-    canvas.blit(title_Home_text,title_Home_text_rectangle)
-
-
-    sim_text=Font_home.render('Simulator', True, black)
-    sim_text_rectangle = sim_text.get_rect()
-    sim_text_rectangle.center = (80,25)
-    canvas.blit(sim_text,sim_text_rectangle)
-
- 
-    button_Play_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
-    button_Play_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
-    button_Play_text=Font_home.render('Play', True, black)
-    button_Play_text_rectangle = button_Play_text.get_rect()
-    button_Play_text_rectangle.center = (665,350)
-    canvas.blit(button_Play_text,button_Play_text_rectangle)
-
-
-    button_settings_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
-    button_settings_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,455,190,90])
-    button_Settings_text=Font_home.render('Settings', True, black)
-    button_Settings_text_rectangle = button_Settings_text.get_rect()
-    button_Settings_text_rectangle.center = (665,500)
-    canvas.blit(button_Settings_text,button_Settings_text_rectangle)
-
-
-
-
-    button_quit_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
-    button_quit_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,605,190,90])
-    button_Quit_text=Font_home.render('Quit', True, black)
-    button_Quit_text_rectangle = button_Quit_text.get_rect()
-    button_Quit_text_rectangle.center = (665,650)
-    canvas.blit(button_Quit_text,button_Quit_text_rectangle)
-
 
 
 
@@ -116,55 +71,78 @@ def simulation():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit = True
+        if menu == True:
+            mouse=pygame.mouse.get_pos()
 
-        mouse=pygame.mouse.get_pos()
-        if 565 <= mouse[0] <= 765 and 300 <= mouse[1] <= 400 :
-            button_Play_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,300,200,100])
-            button_Play_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,305,190,90])
-            button_Play_text=Font_home.render('Play', True, white)
-            button_Play_text_rectangle = button_Play_text.get_rect()
-            button_Play_text_rectangle.center = (665,350)
-            canvas.blit(button_Play_text,button_Play_text_rectangle)
-        else:
-            button_Play_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
-            button_Play_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
-            button_Play_text=Font_home.render('Play', True, black)
-            button_Play_text_rectangle = button_Play_text.get_rect()
-            button_Play_text_rectangle.center = (665,350)
-            canvas.blit(button_Play_text,button_Play_text_rectangle)
-        
-        if 565 <= mouse[0] <= 765 and 450 <= mouse[1] <= 550 : 
-            button_settings_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,450,200,100])
-            button_settings_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,455,190,90])
-            button_Settings_text=Font_home.render('Settings', True, white)
-            button_Settings_text_rectangle = button_Settings_text.get_rect()
-            button_Settings_text_rectangle.center = (665,500)
-            canvas.blit(button_Settings_text,button_Settings_text_rectangle)
-        else:
-            button_settings_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
-            button_settings_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,455,190,90])
-            button_Settings_text=Font_home.render('Settings', True, black)
-            button_Settings_text_rectangle = button_Settings_text.get_rect()
-            button_Settings_text_rectangle.center = (665,500)
-            canvas.blit(button_Settings_text,button_Settings_text_rectangle)
+            background_home_color=(0, 100, 0)
+            black=(0,0,0)
+            white=(255,255,255)
+            Font_home=pygame.font.SysFont('Arial.ttf',50)
+            Font_home_title=pygame.font.SysFont('Arial.ttf',300)
+            canvas.fill(background_home_color)
+
+            title_Home_text=Font_home_title.render('Poker', True, black)
+            title_Home_text_rectangle = title_Home_text.get_rect()
+            title_Home_text_rectangle.center = (665,150)
+            canvas.blit(title_Home_text,title_Home_text_rectangle)
 
 
-        if 565 <= mouse[0] <= 765 and 600 <= mouse[1] <= 750 :
-            button_quit_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,600,200,100])
-            button_quit_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,605,190,90])
-            button_Quit_text=Font_home.render('Quit', True, white)
-            button_Quit_text_rectangle = button_Quit_text.get_rect()
-            button_Quit_text_rectangle.center = (665,650)
-            canvas.blit(button_Quit_text,button_Quit_text_rectangle)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                exit=True
-        else:
-            button_quit_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
-            button_quit_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,605,190,90])
-            button_Quit_text=Font_home.render('Quit', True, black)
-            button_Quit_text_rectangle = button_Quit_text.get_rect()
-            button_Quit_text_rectangle.center = (665,650)
-            canvas.blit(button_Quit_text,button_Quit_text_rectangle)
+            sim_text=Font_home.render('Simulator', True, black)
+            sim_text_rectangle = sim_text.get_rect()
+            sim_text_rectangle.center = (80,25)
+            canvas.blit(sim_text,sim_text_rectangle)
+            if 565 <= mouse[0] <= 765 and 300 <= mouse[1] <= 400 :
+                button_Play_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,300,200,100])
+                button_Play_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,305,190,90])
+                button_Play_text=Font_home.render('Play', True, white)
+                button_Play_text_rectangle = button_Play_text.get_rect()
+                button_Play_text_rectangle.center = (665,350)
+                canvas.blit(button_Play_text,button_Play_text_rectangle)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    menu=False
+                    Play=True
+            else:
+                button_Play_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
+                button_Play_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
+                button_Play_text=Font_home.render('Play', True, black)
+                button_Play_text_rectangle = button_Play_text.get_rect()
+                button_Play_text_rectangle.center = (665,350)
+                canvas.blit(button_Play_text,button_Play_text_rectangle)
+            
+            if 565 <= mouse[0] <= 765 and 450 <= mouse[1] <= 550 : 
+                button_settings_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,450,200,100])
+                button_settings_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,455,190,90])
+                button_Settings_text=Font_home.render('Settings', True, white)
+                button_Settings_text_rectangle = button_Settings_text.get_rect()
+                button_Settings_text_rectangle.center = (665,500)
+                canvas.blit(button_Settings_text,button_Settings_text_rectangle)
+            else:
+                button_settings_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
+                button_settings_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,455,190,90])
+                button_Settings_text=Font_home.render('Settings', True, black)
+                button_Settings_text_rectangle = button_Settings_text.get_rect()
+                button_Settings_text_rectangle.center = (665,500)
+                canvas.blit(button_Settings_text,button_Settings_text_rectangle)
+
+
+            if 565 <= mouse[0] <= 765 and 600 <= mouse[1] <= 750 :
+                button_quit_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,600,200,100])
+                button_quit_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,605,190,90])
+                button_Quit_text=Font_home.render('Quit', True, white)
+                button_Quit_text_rectangle = button_Quit_text.get_rect()
+                button_Quit_text_rectangle.center = (665,650)
+                canvas.blit(button_Quit_text,button_Quit_text_rectangle)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    exit=True
+            else:
+                button_quit_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
+                button_quit_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,605,190,90])
+                button_Quit_text=Font_home.render('Quit', True, black)
+                button_Quit_text_rectangle = button_Quit_text.get_rect()
+                button_Quit_text_rectangle.center = (665,650)
+                canvas.blit(button_Quit_text,button_Quit_text_rectangle)
+        elif Play == True:
+            canvas.fill(white)
 
 
         pygame.display.update()
