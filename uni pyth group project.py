@@ -63,6 +63,14 @@ def simulation():
     pygame.display.set_caption("poker Simulation")
     exit = False
 
+    background_home_color=(0, 100, 0)
+    black=(0,0,0)
+    canvas.fill(background_home_color)
+    pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
+    pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
+    pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
+    pygame.display.flip()
+
     while not exit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
