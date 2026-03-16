@@ -1,5 +1,7 @@
 import pygame
 import random
+import itertools
+import math
 
 """
 I have created 2 tuples, tuples are non mutable lists which means that they can NOT change at run time.
@@ -11,30 +13,16 @@ the game the code will create a fresh new list for them each game from these 2 t
 
 """
 
-numcardtuple = ('Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King')
-suitcardtuple=('Diamond','Hearts','clubs','spades')
 
 
-#The use of abstraction could have been used here as we could shorten down long words like Diamond into the letter 'D' instead but this may confuse people later on and we want the game to be as clear as possible.
-
-def Probability():
-    None
-
-def draw_hand(numcardtuple,suitcardtuple):
-    current_card_list=card_list(numcardtuple,suitcardtuple)
-    draw_card_one=random.choice(current_card_list)
-    current_card_list.remove(draw_card_one)
-    draw_card_two=random.choice(current_card_list)
-    current_card_list.remove(draw_card_two)
-    return draw_card_one,draw_card_two
-
-    
-
-def card_list(numcardtuple,suitcardtuple):
+def card_list():
     """
     This function will take the two tuples of the suits and the card numbers to generate a 2 dimentional list.
     
     """
+    numcardtuple = ('Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King')
+    suitcardtuple=('Diamond','Hearts','clubs','spades')
+
     rows, column = 52 , 2
     cardlist=[[0 for x in range(column)] for y in range(rows)]
 
@@ -52,7 +40,54 @@ def card_list(numcardtuple,suitcardtuple):
                 cardlist[index_value_current_num+(13*rep_num)][0]=current_num
     return cardlist
 
-print(draw_hand(numcardtuple,suitcardtuple))
+def Probability():
+    None
+
+def probabililty_high_card():
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_of_high_card= (1499*(((4)**7)+(-756)+(-4)+(-84)))
+    probability_high_card_variable=total_combinations_of_high_card / total_combinations_of_hand_of_seven_cards
+    return probability_high_card_variable
+print(probabililty_high_card())
+
+
+
+def probability_one_pair():
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_of_one_pair=((math.comb(13,6))-71) *6 *6 *990
+    probability_one_pair_variable=total_combinations_of_one_pair / total_combinations_of_hand_of_seven_cards
+    return probability_one_pair_variable
+print(probability_one_pair())
+
+
+def probability_two_pair():
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_of_two_pair= (1277*10*((6*62)+(24*63)+(6*64))+((math.comb(13,3))*((math.comb(4,2))**3)*(math.comb(40,1))))
+    probability_two_pair_variable=total_combinations_of_two_pair / total_combinations_of_hand_of_seven_cards
+    return probability_two_pair_variable
+print(probability_two_pair())
+
+
+
+def hand_input_two_cards(draw_card_one,draw_card_two):
+    None
+def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
+    None
+def hand_input_four_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four):
+    None
+def hand_input_five_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five):
+    None
+
+def draw_hand():
+    current_card_list=card_list()
+    draw_card_one=random.choice(current_card_list)
+    current_card_list.remove(draw_card_one)
+    draw_card_two=random.choice(current_card_list)
+    current_card_list.remove(draw_card_two)
+    return draw_card_one,draw_card_two
+    
+
+
 
 def simulation():
     menu=True
@@ -143,8 +178,9 @@ def simulation():
                 canvas.blit(button_Quit_text,button_Quit_text_rectangle)
         elif Play == True:
             canvas.fill(white)
+            
+
 
 
         pygame.display.update()
-
 simulation()
