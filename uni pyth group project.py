@@ -34,10 +34,10 @@ def card_list():
             
 
     for current_num in numcardtuple:
-        for rep_num in range(4):
+        for repeat_num in range(4):
             for y in range(rows):
                 index_value_current_num=numcardtuple.index(current_num)
-                cardlist[index_value_current_num+(13*rep_num)][0]=current_num
+                cardlist[index_value_current_num+(13*repeat_num)][0]=current_num
     return cardlist
 
 def Probability():
@@ -106,6 +106,9 @@ def probability_two_pair():
     return probability_two_pair_variable
 print(probability_two_pair())
 
+
+
+
 def probability_three_of_a_kind():
 
     """
@@ -127,6 +130,134 @@ def probability_three_of_a_kind():
     return probability_three_of_a_kind_variable
 print(probability_three_of_a_kind())
 
+
+def probability_straight():
+    """
+    ** I am still working on this area of code **
+    This code will provide the probability of getting a straight when all the cards that we will be recieving are still unkown to us.
+
+    Paremeters: None.
+
+    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
+    If someone could do more research on this an input it into this docstring it would be most apprecaited.
+    
+    """
+
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_straight= (217*(((4)**7)+(-756)+(-4)+(-84)))+((71)*(36)*(990))+(((10)*(5)*(4)*((256)-(3)))+(10)*(math.comb(5,2))*(2268))
+    probability_straight_variable=total_combinations_straight / total_combinations_of_hand_of_seven_cards
+    return probability_straight_variable
+print(probability_straight())
+
+
+def probability_flush():
+    """
+    ** I am still working on this area of code **
+    This code will provide the probability of getting a flush when all the cards that we will be recieving are still unkown to us.
+
+    Paremeters: None.
+
+    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
+    If someone could do more research on this an input it into this docstring it would be most apprecaited.
+    
+    """
+
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_flush= ((math.comb(4,1))*(((math.comb(13,7)))-(217)))+((math.comb(4,1))*(((math.comb(13,6)))-(71))*(39))+((math.comb(4,1))*(((math.comb(13,5)))-(10))*(math.comb(39,2)))
+    probability_flush_variable=total_combinations_flush / total_combinations_of_hand_of_seven_cards
+    return probability_flush_variable
+print(probability_flush())
+
+
+def probability_full_house():
+    """
+    ** I am still working on this area of code **
+    This code will provide the probability of getting a full house when all the cards that we will be recieving are still unkown to us.
+
+    Paremeters: None.
+
+    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
+    If someone could do more research on this an input it into this docstring it would be most apprecaited.
+    
+    """
+
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_full_house= ((math.comb(13,2))*((math.comb(4,3))**2)*(math.comb(44,1)))+((math.comb(13,1))*(math.comb(12,2))*(math.comb(4,3))*((math.comb(4,2))**2))+((math.comb(13,1))*(math.comb(12,1))*(math.comb(11,2))*(math.comb(4,3))*(math.comb(4,2))*((math.comb(4,1))**2))
+    probability_full_house_variable=total_combinations_full_house / total_combinations_of_hand_of_seven_cards
+    return probability_full_house_variable
+print(probability_full_house())
+
+
+def probability_four_of_a_kind():
+    """
+    ** I am still working on this area of code **
+    This code will provide the probability of getting a four of a kind when all the cards that we will be recieving are still unkown to us.
+
+    Paremeters: None.
+
+    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
+    If someone could do more research on this an input it into this docstring it would be most apprecaited.
+    
+    """
+
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_four_of_a_kind= (math.comb(13,1))*(math.comb(48,3))
+    probability_four_of_a_kind_variable=total_combinations_four_of_a_kind / total_combinations_of_hand_of_seven_cards
+    return probability_four_of_a_kind_variable
+print(probability_four_of_a_kind())
+
+
+def probability_straight_flush():
+    """
+    ** I am still working on this area of code **
+    This code will provide the probability of getting a straight flush when all the cards that we will be recieving are still unkown to us.
+
+    Paremeters: None.
+
+    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
+    If someone could do more research on this an input it into this docstring it would be most apprecaited.
+    
+    """
+
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_straight_flush= (math.comb(9,1))*(math.comb(4,1))*(math.comb(46,2))
+    probability_straight_flush_variable=total_combinations_straight_flush / total_combinations_of_hand_of_seven_cards
+    return probability_straight_flush_variable
+print(probability_straight_flush())
+
+
+def probability_royal_flush():
+    """
+    ** I am still working on this area of code **
+    This code will provide the probability of getting a royal flush when all the cards that we will be recieving are still unkown to us.
+
+    Paremeters: None.
+
+    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
+    If someone could do more research on this an input it into this docstring it would be most apprecaited.
+    
+    """
+
+    total_combinations_of_hand_of_seven_cards=math.comb(52,7)
+    total_combinations_royal_flush= (4)*(math.comb(47,2))
+    probability_royal_flush_variable=total_combinations_royal_flush / total_combinations_of_hand_of_seven_cards
+    return probability_royal_flush_variable
+print(probability_royal_flush())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def hand_input_two_cards(draw_card_one,draw_card_two):
     """
     The user knows 2 out of the seven cards in Texas Holdem. We will presume these are the cards in there hand and not on the table
@@ -134,7 +265,8 @@ def hand_input_two_cards(draw_card_one,draw_card_two):
     If the user would like to put in there cards independently.
 
     """
-    None
+    deck_size=(math.comb(50,5))
+
 def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
     """
     The user knows 3 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 1 on the table
@@ -142,7 +274,7 @@ def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
     If the user would like to put in there cards independently.
 
     """
-    None
+    deck_size=(math.comb(49,4))
 def hand_input_four_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four):
     """
     The user knows 4 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 2 on the table
@@ -150,7 +282,7 @@ def hand_input_four_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_
     If the user would like to put in there cards independently.
 
     """
-    None
+    deck_size=(math.comb(48,3))
 def hand_input_five_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five):
     """
     The user knows 5 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 3 on the table
@@ -158,7 +290,7 @@ def hand_input_five_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_
     If the user would like to put in there cards independently.
 
     """
-    None
+    deck_size=(math.comb(47,2))
 
 def hand_input_six_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five,draw_card_six):
     """
@@ -167,7 +299,7 @@ def hand_input_six_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_f
     If the user would like to put in there cards independently.
 
     """
-    None
+    deck_size=(math.comb(46,1))
 
 def hand_input_seven_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five,draw_card_six,draw_card_seven):
     """
