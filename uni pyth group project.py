@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import itertools
 
 
 
@@ -266,6 +267,22 @@ def hand_input_two_cards(draw_card_one,draw_card_two):
 
     """
     deck_size=(math.comb(50,5))
+    my_hand= draw_card_one + draw_card_two
+    print(my_hand)
+    rankings={"high_card":0,"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
+    card_list_input=card_list()
+    card_list_input.remove(draw_card_one)
+    card_list_input.remove(draw_card_two)
+    known = my_hand
+    print(card_list_input)
+    all_combinataions= itertools.combinations(card_list_input,5)
+    for current_combination in range (deck_size):
+        combination= next(all_combinataions)
+        print(combination)
+
+card_one=[7,'spades']
+card_two=[8,'spades']
+hand_input_two_cards(card_one,card_two)
 
 def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
     """
@@ -309,6 +326,10 @@ def hand_input_seven_cards(draw_card_one,draw_card_two,draw_card_three,draw_card
 
     """
     None
+
+
+
+
 
 def draw_hand():
     """
