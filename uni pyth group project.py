@@ -264,6 +264,8 @@ def hand_input_two_cards(draw_card_one,draw_card_two):
     The user knows 2 out of the seven cards in Texas Holdem. We will presume these are the cards in there hand and not on the table
     
     If the user would like to put in there cards independently.
+    please put them in the form: [number,'suit'] 
+    eg. [6,'spades'] , [king,'hearts']
 
     """
     deck_size=(math.comb(50,5))
