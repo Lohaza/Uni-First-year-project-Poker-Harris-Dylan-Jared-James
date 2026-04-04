@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 import itertools
-
+import collections
 
 
 
@@ -41,6 +41,15 @@ def card_list():
                 cardlist[index_value_current_num+(13*repeat_num)][0]=current_num
     return cardlist
 
+def probability(rankings,deck_size):
+    rankings_list = list(rankings.items())
+    for rank in rankings_list:
+        print(rank)
+        index_rank=rankings_list.index(rank)
+        new_probability_rank= rank[1]/deck_size
+        rankings_list[index_rank] = new_probability_rank
+    print(rankings_list)
+    return rankings_list
 
 
 def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
@@ -246,7 +255,6 @@ def probabililty_high_card():
     total_combinations_of_high_card= (1499*(((4)**7)+(-756)+(-4)+(-84)))
     probability_high_card_variable=total_combinations_of_high_card / total_combinations_of_hand_of_seven_cards
     return probability_high_card_variable
-print(probabililty_high_card())
 
 
 
@@ -268,7 +276,6 @@ def probability_one_pair():
     total_combinations_of_one_pair=((math.comb(13,6))-71) *6 *6 *990
     probability_one_pair_variable=total_combinations_of_one_pair / total_combinations_of_hand_of_seven_cards
     return probability_one_pair_variable
-print(probability_one_pair())
 
 
 def probability_two_pair():
@@ -290,7 +297,6 @@ def probability_two_pair():
     total_combinations_of_two_pair= (1277*10*((6*62)+(24*63)+(6*64))+((math.comb(13,3))*((math.comb(4,2))**3)*(math.comb(40,1))))
     probability_two_pair_variable=total_combinations_of_two_pair / total_combinations_of_hand_of_seven_cards
     return probability_two_pair_variable
-print(probability_two_pair())
 
 
 
@@ -314,7 +320,6 @@ def probability_three_of_a_kind():
     total_combinations_three_of_a_kind= ((math.comb(13,5)-10)*(math.comb(5,1))*(math.comb(4,1))*((math.comb(4,1)**4)-3))
     probability_three_of_a_kind_variable=total_combinations_three_of_a_kind / total_combinations_of_hand_of_seven_cards
     return probability_three_of_a_kind_variable
-print(probability_three_of_a_kind())
 
 
 def probability_straight():
@@ -333,7 +338,6 @@ def probability_straight():
     total_combinations_straight= (217*(((4)**7)+(-756)+(-4)+(-84)))+((71)*(36)*(990))+(((10)*(5)*(4)*((256)-(3)))+(10)*(math.comb(5,2))*(2268))
     probability_straight_variable=total_combinations_straight / total_combinations_of_hand_of_seven_cards
     return probability_straight_variable
-print(probability_straight())
 
 
 def probability_flush():
@@ -352,7 +356,6 @@ def probability_flush():
     total_combinations_flush= ((math.comb(4,1))*(((math.comb(13,7)))-(217)))+((math.comb(4,1))*(((math.comb(13,6)))-(71))*(39))+((math.comb(4,1))*(((math.comb(13,5)))-(10))*(math.comb(39,2)))
     probability_flush_variable=total_combinations_flush / total_combinations_of_hand_of_seven_cards
     return probability_flush_variable
-print(probability_flush())
 
 
 def probability_full_house():
@@ -371,7 +374,6 @@ def probability_full_house():
     total_combinations_full_house= ((math.comb(13,2))*((math.comb(4,3))**2)*(math.comb(44,1)))+((math.comb(13,1))*(math.comb(12,2))*(math.comb(4,3))*((math.comb(4,2))**2))+((math.comb(13,1))*(math.comb(12,1))*(math.comb(11,2))*(math.comb(4,3))*(math.comb(4,2))*((math.comb(4,1))**2))
     probability_full_house_variable=total_combinations_full_house / total_combinations_of_hand_of_seven_cards
     return probability_full_house_variable
-print(probability_full_house())
 
 
 def probability_four_of_a_kind():
@@ -390,7 +392,6 @@ def probability_four_of_a_kind():
     total_combinations_four_of_a_kind= (math.comb(13,1))*(math.comb(48,3))
     probability_four_of_a_kind_variable=total_combinations_four_of_a_kind / total_combinations_of_hand_of_seven_cards
     return probability_four_of_a_kind_variable
-print(probability_four_of_a_kind())
 
 
 def probability_straight_flush():
@@ -409,7 +410,6 @@ def probability_straight_flush():
     total_combinations_straight_flush= (math.comb(9,1))*(math.comb(4,1))*(math.comb(46,2))
     probability_straight_flush_variable=total_combinations_straight_flush / total_combinations_of_hand_of_seven_cards
     return probability_straight_flush_variable
-print(probability_straight_flush())
 
 
 def probability_royal_flush():
@@ -428,14 +428,6 @@ def probability_royal_flush():
     total_combinations_royal_flush= (4)*(math.comb(47,2))
     probability_royal_flush_variable=total_combinations_royal_flush / total_combinations_of_hand_of_seven_cards
     return probability_royal_flush_variable
-print(probability_royal_flush())
-
-
-
-
-
-
-
 
 
 
@@ -447,27 +439,65 @@ def flush_structure(item_suits):
 
 
 def one_pair_structure(item_number):
-    for current in range(0, len(item_number) // 2):
-        if item_number[current] == item_number[-current - 1]:
-            return True
-    return False
+    counts = collections.Counter(item_number)
+    if list(counts.values()).count(2) == 1:
+        return True
 
 
 
 def two_pair_structure(item_number):
-    None
+    counts = collections.Counter(item_number)
+    duplicates = [item for item, count in counts.items() if count > 1]
+    if len(duplicates) == 2:
+        return True
+    return False
             
 
 
 
 def three_of_a_kind_structure(item_number):
-    item_number_len=len(item_number)
-    item_number_set_len=len(set(item_number))
-    duplicates_found= item_number_len - item_number_set_len
-    if duplicates_found == 2:
+    counts = collections.Counter(item_number)
+    if any(count == 3 for count in counts.values()):
         return True
-    else:
-        return False
+    return False
+    
+def four_of_a_kind_structure(item_number):
+    counts = collections.Counter(item_number)
+    if any(count == 4 for count in counts.values()):
+        return True
+    return False
+
+def full_house_structure(item_number):
+    counts = collections.Counter(item_number)
+    if 3 in counts.values() and 2 in counts.values():
+        return True
+    return False
+
+def straight_structure(item_number):
+    for current_item in item_number:
+        if current_item == 'Ace':
+            index_item_A = item_number.index('Ace')
+            item_number[index_item_A] = 1
+        if current_item == 'Jack':
+            index_item_J = item_number.index('Jack')
+            item_number[index_item_J] = 11
+        if current_item == 'Queen':
+            index_item_Q = item_number.index('Queen')
+            item_number[index_item_Q] = 12
+        if current_item == 'King':
+            index_item_K = item_number.index('King')
+            item_number[index_item_K] = 13
+    numbers = sorted(item_number)
+    unique_sorted_numbers= list(set(numbers))
+    for i in range(len(unique_sorted_numbers) - 4):
+        subset = unique_sorted_numbers[i:i+5]
+        if subset[4] - subset[0] == 4:
+            return True
+        
+    if set([1, 2, 3, 4, 14]).issubset(set(item_number)):
+        return True
+    
+    return False
     
 
 
@@ -481,8 +511,7 @@ def hand_input_two_cards(draw_card_one,draw_card_two):
 
     """
     deck_size=(math.comb(50,5))
-    my_hand= draw_card_one + draw_card_two
-    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
+    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,}
     card_list_input=card_list()
     card_list_input.remove(draw_card_one)
     card_list_input.remove(draw_card_two)
@@ -493,14 +522,20 @@ def hand_input_two_cards(draw_card_one,draw_card_two):
             rankings['flush'] += 1
         if one_pair_structure(item_number) == True:
             rankings['one_pair'] += 1
-        two_pair_structure(item_number)
+        if two_pair_structure(item_number)== True:
+            rankings['two_one_pair'] += 1
         if three_of_a_kind_structure(item_number)== True:
             rankings['three_of_a_kind'] += 1
-    print(rankings)
+        if four_of_a_kind_structure(item_number)== True:
+            rankings['four_of_a_kind'] += 1
+        if full_house_structure(item_number)== True:
+            rankings['full_house'] += 1
+        if straight_structure(item_number)== True:
+            rankings['straight'] += 1
+        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
+            rankings['straight_flush'] += 1
+    return rankings , deck_size
 
-card_one=[7,'hearts']
-card_two=[8,'spades']
-hand_input_two_cards(card_one,card_two)
 
 
 def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
@@ -511,6 +546,34 @@ def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
 
     """
     deck_size=(math.comb(49,4))
+    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
+    card_list_input=card_list()
+    card_list_input.remove(draw_card_one)
+    card_list_input.remove(draw_card_two)
+    card_list_input.remove(draw_card_three)
+    for current_combination in itertools.combinations(card_list_input, 4):
+        item_suits = [card[1] for card in current_combination]
+        item_number = [card[0] for card in current_combination]
+        if flush_structure(item_suits) == True:
+            rankings['flush'] += 1
+        if one_pair_structure(item_number) == True:
+            rankings['one_pair'] += 1
+        if two_pair_structure(item_number)== True:
+            rankings['two_one_pair'] += 1
+        if three_of_a_kind_structure(item_number)== True:
+            rankings['three_of_a_kind'] += 1
+        if four_of_a_kind_structure(item_number)== True:
+            rankings['four_of_a_kind'] += 1
+        if full_house_structure(item_number)== True:
+            rankings['full_house'] += 1
+        if straight_structure(item_number)== True:
+            rankings['straight'] += 1
+        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
+            rankings['straight_flush'] += 1
+    return rankings , deck_size
+
+
+
 def hand_input_four_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four):
     """
     The user knows 4 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 2 on the table
@@ -519,6 +582,35 @@ def hand_input_four_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_
 
     """
     deck_size=(math.comb(48,3))
+    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
+    card_list_input=card_list()
+    card_list_input.remove(draw_card_one)
+    card_list_input.remove(draw_card_two)
+    card_list_input.remove(draw_card_three)
+    card_list_input.remove(draw_card_four)
+    for current_combination in itertools.combinations(card_list_input, 3):
+        item_suits = [card[1] for card in current_combination]
+        item_number = [card[0] for card in current_combination]
+        if flush_structure(item_suits) == True:
+            rankings['flush'] += 1
+        if one_pair_structure(item_number) == True:
+            rankings['one_pair'] += 1
+        if two_pair_structure(item_number)== True:
+            rankings['two_one_pair'] += 1
+        if three_of_a_kind_structure(item_number)== True:
+            rankings['three_of_a_kind'] += 1
+        if four_of_a_kind_structure(item_number)== True:
+            rankings['four_of_a_kind'] += 1
+        if full_house_structure(item_number)== True:
+            rankings['full_house'] += 1
+        if straight_structure(item_number)== True:
+            rankings['straight'] += 1
+        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
+            rankings['straight_flush'] += 1
+    return rankings , deck_size
+
+
+
 def hand_input_five_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five):
     """
     The user knows 5 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 3 on the table
@@ -527,6 +619,35 @@ def hand_input_five_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_
 
     """
     deck_size=(math.comb(47,2))
+    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
+    card_list_input=card_list()
+    card_list_input.remove(draw_card_one)
+    card_list_input.remove(draw_card_two)
+    card_list_input.remove(draw_card_three)
+    card_list_input.remove(draw_card_four)
+    card_list_input.remove(draw_card_five)
+    for current_combination in itertools.combinations(card_list_input, 2):
+        item_suits = [card[1] for card in current_combination]
+        item_number = [card[0] for card in current_combination]
+        if flush_structure(item_suits) == True:
+            rankings['flush'] += 1
+        if one_pair_structure(item_number) == True:
+            rankings['one_pair'] += 1
+        if two_pair_structure(item_number)== True:
+            rankings['two_one_pair'] += 1
+        if three_of_a_kind_structure(item_number)== True:
+            rankings['three_of_a_kind'] += 1
+        if four_of_a_kind_structure(item_number)== True:
+            rankings['four_of_a_kind'] += 1
+        if full_house_structure(item_number)== True:
+            rankings['full_house'] += 1
+        if straight_structure(item_number)== True:
+            rankings['straight'] += 1
+        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
+            rankings['straight_flush'] += 1
+    return rankings , deck_size
+
+    
 
 def hand_input_six_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five,draw_card_six):
     """
@@ -536,6 +657,34 @@ def hand_input_six_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_f
 
     """
     deck_size=(math.comb(46,1))
+    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
+    card_list_input=card_list()
+    card_list_input.remove(draw_card_one)
+    card_list_input.remove(draw_card_two)
+    card_list_input.remove(draw_card_three)
+    card_list_input.remove(draw_card_four)
+    card_list_input.remove(draw_card_five)
+    card_list_input.remove(draw_card_six)
+    for current_combination in itertools.combinations(card_list_input, 1):
+        item_suits = [card[1] for card in current_combination]
+        item_number = [card[0] for card in current_combination]
+        if flush_structure(item_suits) == True:
+            rankings['flush'] += 1
+        if one_pair_structure(item_number) == True:
+            rankings['one_pair'] += 1
+        if two_pair_structure(item_number)== True:
+            rankings['two_one_pair'] += 1
+        if three_of_a_kind_structure(item_number)== True:
+            rankings['three_of_a_kind'] += 1
+        if four_of_a_kind_structure(item_number)== True:
+            rankings['four_of_a_kind'] += 1
+        if full_house_structure(item_number)== True:
+            rankings['full_house'] += 1
+        if straight_structure(item_number)== True:
+            rankings['straight'] += 1
+        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
+            rankings['straight_flush'] += 1
+    return rankings , deck_size
 
 def hand_input_seven_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five,draw_card_six,draw_card_seven):
     """
@@ -545,7 +694,6 @@ def hand_input_seven_cards(draw_card_one,draw_card_two,draw_card_three,draw_card
 
     """
     None
-
 
 
 
@@ -565,6 +713,23 @@ def draw_hand():
     current_card_list.remove(draw_card_two)
     return draw_card_one,draw_card_two, current_card_list
     
+
+
+
+
+card_one=[7,'hearts']
+card_two=[8,'spades']
+card_three=[5,'hearts']
+card_four=['Jack','spades']
+card_five=[10,'spades']
+card_six=[4,'spades']
+card_seven=[5,'spades']
+hand_input_two_cards(card_one,card_two)
+hand_input_three_cards(card_one,card_two,card_three)
+hand_input_four_cards(card_one,card_two,card_three,card_four)
+hand_input_five_cards(card_one,card_two,card_three,card_four,card_five)
+hand_input_six_cards(card_one,card_two,card_three,card_four,card_five,card_six)
+
 
 
 
