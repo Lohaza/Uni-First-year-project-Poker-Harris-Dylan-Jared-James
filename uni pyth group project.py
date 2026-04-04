@@ -22,7 +22,7 @@ def card_list():
     
     """
     numcardtuple = ('Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King')
-    suitcardtuple=('Diamond','Hearts','clubs','spades')
+    suitcardtuple=('diamond','hearts','clubs','spades')
 
     rows, column = 52 , 2
     cardlist=[[0 for x in range(column)] for y in range(rows)]
@@ -41,8 +41,193 @@ def card_list():
                 cardlist[index_value_current_num+(13*repeat_num)][0]=current_num
     return cardlist
 
-def Probability():
-    None
+
+
+def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
+    """
+    This function will evaluate the parameters of card_1, card_2, suit_card_1 and suit_card_2. 
+    After evaluating these parameters, it will give an output of the potential different hand(s) you could get from those parameters.
+    These cards are a representation of the first two cards you will receive whilst playing the Poker game, Texas Hold'em. 
+    These cards are known by the name, Hole cards.
+
+    For example: 
+    
+    If the first two cards are a 10 of Hearts and a King of Hearts, this would give the possibility of the potential hand; Royal Flush.
+    
+    Parameters:
+    card_1: Key-value pair, of which is part of the Dictionary literal.
+    card_2: Key-value pair, of which is part of the Dictionary literal.
+    suit_card_1: Element of the set.
+    suit_card_2: Element of the set.
+
+    Remark: The Dictionary literal used is {'1' : 1 , '2' : 2 , '3' : 3 , '4' : 4 , '5' : 5 , '6' : 6 ,
+            '7' : 7 , '8' : 8 , '9' : 9 , '10' : 10 , 'J' : 11 , 'Q' : 12 , 'K' : 13 , 'A' : 14}.
+            The set used is { 'D' , 'H' , 'S' , 'C' }.
+
+    Returns:
+    After correctly inputting the parameters, you will receive one two options for an output.
+    You will either receive a string literal argument that tells you the different potential hand(s) you could form,
+    or you will receive another string literal argument that tells you that there is no good indication of potential hand(s).
+    """
+
+    suits = { 'D' , 'H' , 'S' , 'C' }
+    ranks = { '1' : 1 , '2' : 2 , '3' : 3 ,
+         '4' : 4 , '5' : 5 , '6' : 6 ,
+         '7' : 7 , '8' : 8 , '9' : 9 ,
+         '10' : 10 , 'J' : 11 , 'Q' : 12 ,
+         'K' : 13 , 'A' : 14}
+    
+    print('Potential hand(s):')
+    value_card_1 = ranks[card_1]
+    value_card_2 = ranks[card_2]
+    total_value = value_card_1 + value_card_2
+    difference = abs(value_card_1 - value_card_2)
+    
+    if total_value >= 20 and suit_card_1 == suit_card_2:
+        print('Royal Flush')
+        return
+    
+    if value_card_1 == 14 and value_card_2 <= 5 and suit_card_1 == suit_card_2:
+        print('Straight Flush')
+        
+    elif value_card_2 == 14 and value_card_1 <= 5 and suit_card_1 == suit_card_2:
+        print('Straight Flush')
+
+    elif difference < 5 and suit_card_1 == suit_card_2:
+        print('Straight Flush')
+              
+
+    if card_1 == card_2:
+        print('Four of a kind')
+        print('Full House')
+        print('Flush')
+        print('Three of a kind')
+        print('Two Pair')
+        print('Pair')
+        return
+        
+    if value_card_1 == 14 and value_card_2 <= 5:
+        print('Straight')
+        
+    elif value_card_2 == 14 and value_card_1 <= 5:
+        print('Straight')
+
+    elif difference < 5:
+        print('Straight')
+
+    else: 
+        print('No good indication of potential hands') 
+
+
+    
+
+def hand_checker_for_hole_and_flop_cards(card_1 , card_2 , card_3 , card_4 , card_5 , suit_card_1 , suit_card_2 , 
+                                         suit_card_3 , suit_card_4 , suit_card_5 ):
+    """
+    This function will evaluate the parameters card_1, card_2, card_3, card_4, card_5, suit_card_1, suit_card_2,
+    suit_card_3, suit_card_4 and suit_card_5.
+    After it has evaluated these parameters, it will provide an output of the different potential hand(s) that those given
+    parameters could give you. 
+    Here, the cards are a representation of the first two cards you receive (known as the Hole cards) and the first three
+    community cards you see (known as the Flop cards). Whilst playing the Poker game, Texas Hold'em.
+
+    For example:
+
+    If the Hole cards are a 10 of Diamonds and Jack of Diamonds. Then the Flop cards are a Queen of Diamonds, King of Diamonds
+    and a Ace of Diamonds. Then your potential hand would be a Royal Flush. 
+
+    Parameters:
+    card_1: Key-value pair, of which is part of the Dictionary literal.
+    card_2: Key-value pair, of which is part of the Dictionary literal.
+    card_3: Key-value pair, of which is part of the Dictionary literal.
+    card_4: Key-value pair, of which is part of the Dictionary literal.
+    card_5: Key-value pair, of which is part of the Dictionary literal.
+    suit_card_1: Element of the set.
+    suit_card_2: Element of the set.
+    suit_card_3: Element of the set.
+    suit_card_4: Element of the set.
+    suit_card_5: Element of the set.
+
+    Remark: The Dictionary literal used is {'1' : 1 , '2' : 2 , '3' : 3 , '4' : 4 , '5' : 5 , '6' : 6 ,
+            '7' : 7 , '8' : 8 , '9' : 9 , '10' : 10 , 'J' : 11 , 'Q' : 12 , 'K' : 13 , 'A' : 14}.
+            The set used is { 'D' , 'H' , 'S' , 'C' }.
+
+    Returns:
+    Once you've correclty inputted your parameters, you will receive one of two possible things.
+    You will either receive a string literal argument of which highlights to you the different possible/potential hand(s)
+    you could form/have, or another string literal argument emphasising that you do not have any good indication of 
+    potential hand(s).
+    """
+
+    suits = { 'D' , 'H' , 'S' , 'C' }
+    ranks = { '1' : 1 , '2' : 2 , '3' : 3 ,
+         '4' : 4 , '5' : 5 , '6' : 6 ,
+         '7' : 7 , '8' : 8 , '9' : 9 ,
+         '10' : 10 , 'J' : 11 , 'Q' : 12 ,
+         'K' : 13 , 'A' : 14}
+    print('Potential hand(s):')
+
+    cards = [(card_1 , suit_card_1) , (card_2 , suit_card_2) , (card_3 , suit_card_3) , (card_4, suit_card_4) , (card_5 , suit_card_5)]
+    cards_needed_for_royal_flush = {'10' , 'J' , 'Q' , 'K' , 'A'}
+    check_for_royal_flush_in_your_cards = {check_for_royal_flush_in_your_card for check_for_royal_flush_in_your_card, _ in cards}
+
+    if check_for_royal_flush_in_your_cards == cards_needed_for_royal_flush and suit_card_1 == suit_card_2 == suit_card_3 == suit_card_4 == suit_card_5:
+        print('Royal Flush')
+        return
+
+    my_hole_and_flop_cards = [card_1 , card_2 , card_3 , card_4 , card_5]
+    my_hole_and_flop_cards_values = sorted(ranks[c] for c in my_hole_and_flop_cards)
+    difference = max(my_hole_and_flop_cards_values) - min(my_hole_and_flop_cards_values)
+
+    a_straight = False
+    a_flush = suit_card_1 == suit_card_2 == suit_card_3 == suit_card_4 == suit_card_5
+    
+    if  difference == 4 and len(set(my_hole_and_flop_cards_values)) == 5:
+        a_straight = True  
+
+    elif set(my_hole_and_flop_cards_values) == {14, 2 , 3 , 4 , 5}:
+        a_straight = True
+
+    if a_straight and a_flush:
+        print('Straight Flush')
+        return
+        
+    if a_straight:
+        print('Straight')
+        return
+        
+    for rank in my_hole_and_flop_cards:
+        if my_hole_and_flop_cards.count(rank) == 4:
+            print('Four of a kind')
+            return
+
+    the_counts = [my_hole_and_flop_cards.count(card) for card in set(my_hole_and_flop_cards)]
+
+    if 3 in the_counts and 2 in the_counts:
+        print('Full House')
+        return
+
+    if  suit_card_1 == suit_card_2 == suit_card_3 == suit_card_4 == suit_card_5:
+        print('Flush')
+        return
+
+    for rank in my_hole_and_flop_cards:
+        if my_hole_and_flop_cards.count(rank) == 3:
+            print('Three of a kind')
+            return
+
+    if the_counts.count(2) == 2:
+        print('Two Pair')
+        return
+
+    for rank in my_hole_and_flop_cards: 
+        if my_hole_and_flop_cards.count(rank) == 2:
+            print('Pair')
+            return
+    else: 
+        print('No good indication of potential hands') 
+
+
 
 def probabililty_high_card():
     """
@@ -256,7 +441,34 @@ print(probability_royal_flush())
 
 
 
+def flush_structure(item_suits):
+    if len(set(item_suits)) == 1:
+        return True
 
+
+def one_pair_structure(item_number):
+    for current in range(0, len(item_number) // 2):
+        if item_number[current] == item_number[-current - 1]:
+            return True
+    return False
+
+
+
+def two_pair_structure(item_number):
+    None
+            
+
+
+
+def three_of_a_kind_structure(item_number):
+    item_number_len=len(item_number)
+    item_number_set_len=len(set(item_number))
+    duplicates_found= item_number_len - item_number_set_len
+    if duplicates_found == 2:
+        return True
+    else:
+        return False
+    
 
 
 def hand_input_two_cards(draw_card_one,draw_card_two):
@@ -270,21 +482,26 @@ def hand_input_two_cards(draw_card_one,draw_card_two):
     """
     deck_size=(math.comb(50,5))
     my_hand= draw_card_one + draw_card_two
-    print(my_hand)
-    rankings={"high_card":0,"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
+    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
     card_list_input=card_list()
     card_list_input.remove(draw_card_one)
     card_list_input.remove(draw_card_two)
-    known = my_hand
-    print(card_list_input)
-    all_combinataions= itertools.combinations(card_list_input,5)
-    for current_combination in range (deck_size):
-        combination= next(all_combinataions)
-        print(combination)
+    for current_combination in itertools.combinations(card_list_input, 5):
+        item_suits = [card[1] for card in current_combination]
+        item_number = [card[0] for card in current_combination]
+        if flush_structure(item_suits) == True:
+            rankings['flush'] += 1
+        if one_pair_structure(item_number) == True:
+            rankings['one_pair'] += 1
+        two_pair_structure(item_number)
+        if three_of_a_kind_structure(item_number)== True:
+            rankings['three_of_a_kind'] += 1
+    print(rankings)
 
-card_one=[7,'spades']
+card_one=[7,'hearts']
 card_two=[8,'spades']
 hand_input_two_cards(card_one,card_two)
+
 
 def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
     """
