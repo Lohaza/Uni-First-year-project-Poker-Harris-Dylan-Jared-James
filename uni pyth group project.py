@@ -21,24 +21,17 @@ def card_list():
 
     
     """
-    numcardtuple = ('Ace',2,3,4,5,6,7,8,9,10,'Jack','Queen','King')
-    suitcardtuple=('diamond','hearts','clubs','spades')
+def card_list():
 
-    rows, column = 52 , 2
-    cardlist=[[0 for x in range(column)] for y in range(rows)]
+    numcardtuple = (2,3,4,5,6,7,8,9,10,11,12,13,14)
+    suitcardtuple = ('diamonds','hearts','clubs','spades')
 
-    position=0
-    for current_suit in suitcardtuple:
-        for x in range(len(numcardtuple)):
-            position+=1
-            cardlist[position-1][1]= current_suit
-            
+    cardlist = []
 
-    for current_num in numcardtuple:
-        for repeat_num in range(4):
-            for y in range(rows):
-                index_value_current_num=numcardtuple.index(current_num)
-                cardlist[index_value_current_num+(13*repeat_num)][0]=current_num
+    for suit in suitcardtuple:
+        for num in numcardtuple:
+            cardlist.append([num, suit])
+
     return cardlist
 
 def probability(rankings,deck_size):
@@ -433,267 +426,148 @@ def probability_royal_flush():
 
 
 
-def flush_structure(item_suits):
-    if len(set(item_suits)) == 1:
-        return True
+def flush_structure(cards):
+    suits = [c[1] for c in cards]
+    return len(set(suits)) == 1
 
 
-def one_pair_structure(item_number):
-    counts = collections.Counter(item_number)
-    if list(counts.values()).count(2) == 1:
-        return True
-
-
-
-def two_pair_structure(item_number):
-    counts = collections.Counter(item_number)
-    duplicates = [item for item, count in counts.items() if count > 1]
-    if len(duplicates) == 2:
-        return True
-    return False
-            
+def one_pair_structure(cards):
+    ranks = [c[0] for c in cards]
+    counts = collections.Counter(ranks)
+    return list(counts.values()).count(2) == 1
 
 
 
-def three_of_a_kind_structure(item_number):
-    counts = collections.Counter(item_number)
-    if any(count == 3 for count in counts.values()):
-        return True
-    return False
-    
-def four_of_a_kind_structure(item_number):
-    counts = collections.Counter(item_number)
-    if any(count == 4 for count in counts.values()):
-        return True
-    return False
+def two_pair_structure(cards):
+    ranks = [c[0] for c in cards]
+    return list(collections.Counter(ranks).values()).count(2) == 2
 
-def full_house_structure(item_number):
-    counts = collections.Counter(item_number)
-    if 3 in counts.values() and 2 in counts.values():
-        return True
-    return False
 
-def straight_structure(item_number):
-    for current_item in item_number:
-        if current_item == 'Ace':
-            index_item_A = item_number.index('Ace')
-            item_number[index_item_A] = 1
-        if current_item == 'Jack':
-            index_item_J = item_number.index('Jack')
-            item_number[index_item_J] = 11
-        if current_item == 'Queen':
-            index_item_Q = item_number.index('Queen')
-            item_number[index_item_Q] = 12
-        if current_item == 'King':
-            index_item_K = item_number.index('King')
-            item_number[index_item_K] = 13
-    numbers = sorted(item_number)
-    unique_sorted_numbers= list(set(numbers))
-    for i in range(len(unique_sorted_numbers) - 4):
-        subset = unique_sorted_numbers[i:i+5]
-        if subset[4] - subset[0] == 4:
+def three_of_a_kind_structure(cards):
+    return 3 in collections.Counter([c[0] for c in cards]).values()
+
+
+def four_of_a_kind_structure(cards):
+    return 4 in collections.Counter([c[0] for c in cards]).values()
+
+def full_house_structure(cards):
+    counts = collections.Counter([c[0] for c in cards]).values()
+    return sorted(counts) == [2,3]
+
+
+
+def straight_structure(cards):
+
+    if isinstance(cards[0][0], list):
+        cards = [c[0] for c in cards]
+
+    ranks = [c[0] if isinstance(c, list) else c for c in cards]
+    ranks = sorted(set(ranks))
+
+    for i in range(len(ranks) - 4):
+        if all(ranks[i + j] == ranks[i] + j for j in range(5)):
             return True
-        
-    if set([1, 2, 3, 4, 14]).issubset(set(item_number)):
-        return True
+
+    return set([14,2,3,4,5]).issubset(ranks)
+
+
+
+
+def evaluate_all_known_cards(known_cards):
     
-    return False
-    
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
 
+    unknown_count = 7 - len(known_cards)
 
-def hand_input_two_cards(draw_card_one,draw_card_two):
-    """
-    The user knows 2 out of the seven cards in Texas Holdem. We will presume these are the cards in there hand and not on the table
-    
-    If the user would like to put in there cards independently.
-    please put them in the form: [number,'suit'] 
-    eg. [6,'spades'] , [king,'hearts']
+    rankings = {
+        "one_pair": 0,
+        "two_pair": 0,
+        "three_of_a_kind": 0,
+        "straight": 0,
+        "flush": 0,
+        "full_house": 0,
+        "four_of_a_kind": 0,
+        "straight_flush": 0,
+        "royal_flush": 0
+    }
 
-    """
-    deck_size=(math.comb(50,5))
-    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,}
-    card_list_input=card_list()
-    card_list_input.remove(draw_card_one)
-    card_list_input.remove(draw_card_two)
-    for current_combination in itertools.combinations(card_list_input, 5):
-        item_suits = [card[1] for card in current_combination]
-        item_number = [card[0] for card in current_combination]
-        if flush_structure(item_suits) == True:
-            rankings['flush'] += 1
-        if one_pair_structure(item_number) == True:
-            rankings['one_pair'] += 1
-        if two_pair_structure(item_number)== True:
-            rankings['two_one_pair'] += 1
-        if three_of_a_kind_structure(item_number)== True:
-            rankings['three_of_a_kind'] += 1
-        if four_of_a_kind_structure(item_number)== True:
-            rankings['four_of_a_kind'] += 1
-        if full_house_structure(item_number)== True:
-            rankings['full_house'] += 1
-        if straight_structure(item_number)== True:
-            rankings['straight'] += 1
-        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
-            rankings['straight_flush'] += 1
-    return rankings , deck_size
+    for combo in itertools.combinations(deck, unknown_count):
+
+        seven_cards = list(known_cards) + list(combo)
+
+        rank = best_rank(seven_cards)
+
+        if rank:
+            rankings[rank] += 1
+
+    total = math.comb(len(deck), unknown_count)
+
+    return rankings, total
 
 
 
-def hand_input_three_cards(draw_card_one,draw_card_two,draw_card_three):
-    """
-    The user knows 3 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 1 on the table
-    
-    If the user would like to put in there cards independently.
-
-    """
-    deck_size=(math.comb(49,4))
-    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
-    card_list_input=card_list()
-    card_list_input.remove(draw_card_one)
-    card_list_input.remove(draw_card_two)
-    card_list_input.remove(draw_card_three)
-    for current_combination in itertools.combinations(card_list_input, 4):
-        item_suits = [card[1] for card in current_combination]
-        item_number = [card[0] for card in current_combination]
-        if flush_structure(item_suits) == True:
-            rankings['flush'] += 1
-        if one_pair_structure(item_number) == True:
-            rankings['one_pair'] += 1
-        if two_pair_structure(item_number)== True:
-            rankings['two_one_pair'] += 1
-        if three_of_a_kind_structure(item_number)== True:
-            rankings['three_of_a_kind'] += 1
-        if four_of_a_kind_structure(item_number)== True:
-            rankings['four_of_a_kind'] += 1
-        if full_house_structure(item_number)== True:
-            rankings['full_house'] += 1
-        if straight_structure(item_number)== True:
-            rankings['straight'] += 1
-        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
-            rankings['straight_flush'] += 1
-    return rankings , deck_size
 
 
 
-def hand_input_four_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four):
-    """
-    The user knows 4 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 2 on the table
-
-    If the user would like to put in there cards independently.
-
-    """
-    deck_size=(math.comb(48,3))
-    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
-    card_list_input=card_list()
-    card_list_input.remove(draw_card_one)
-    card_list_input.remove(draw_card_two)
-    card_list_input.remove(draw_card_three)
-    card_list_input.remove(draw_card_four)
-    for current_combination in itertools.combinations(card_list_input, 3):
-        item_suits = [card[1] for card in current_combination]
-        item_number = [card[0] for card in current_combination]
-        if flush_structure(item_suits) == True:
-            rankings['flush'] += 1
-        if one_pair_structure(item_number) == True:
-            rankings['one_pair'] += 1
-        if two_pair_structure(item_number)== True:
-            rankings['two_one_pair'] += 1
-        if three_of_a_kind_structure(item_number)== True:
-            rankings['three_of_a_kind'] += 1
-        if four_of_a_kind_structure(item_number)== True:
-            rankings['four_of_a_kind'] += 1
-        if full_house_structure(item_number)== True:
-            rankings['full_house'] += 1
-        if straight_structure(item_number)== True:
-            rankings['straight'] += 1
-        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
-            rankings['straight_flush'] += 1
-    return rankings , deck_size
-
-
-
-def hand_input_five_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five):
-    """
-    The user knows 5 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 3 on the table
-    
-    If the user would like to put in there cards independently.
-
-    """
-    deck_size=(math.comb(47,2))
-    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
-    card_list_input=card_list()
-    card_list_input.remove(draw_card_one)
-    card_list_input.remove(draw_card_two)
-    card_list_input.remove(draw_card_three)
-    card_list_input.remove(draw_card_four)
-    card_list_input.remove(draw_card_five)
-    for current_combination in itertools.combinations(card_list_input, 2):
-        item_suits = [card[1] for card in current_combination]
-        item_number = [card[0] for card in current_combination]
-        if flush_structure(item_suits) == True:
-            rankings['flush'] += 1
-        if one_pair_structure(item_number) == True:
-            rankings['one_pair'] += 1
-        if two_pair_structure(item_number)== True:
-            rankings['two_one_pair'] += 1
-        if three_of_a_kind_structure(item_number)== True:
-            rankings['three_of_a_kind'] += 1
-        if four_of_a_kind_structure(item_number)== True:
-            rankings['four_of_a_kind'] += 1
-        if full_house_structure(item_number)== True:
-            rankings['full_house'] += 1
-        if straight_structure(item_number)== True:
-            rankings['straight'] += 1
-        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
-            rankings['straight_flush'] += 1
-    return rankings , deck_size
-
+def best_rank(seven_cards):
     
 
-def hand_input_six_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five,draw_card_six):
-    """
-    The user knows 6 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 4 on the table
-    
-    If the user would like to put in there cards independently.
 
-    """
-    deck_size=(math.comb(46,1))
-    rankings={"one_pair":0,"two_one_pair":0,"three_of_a_kind":0,"straight":0,"flush":0,"full_house":0,"four_of_a_kind":0,"straight_flush":0,"royal_flush":0}
-    card_list_input=card_list()
-    card_list_input.remove(draw_card_one)
-    card_list_input.remove(draw_card_two)
-    card_list_input.remove(draw_card_three)
-    card_list_input.remove(draw_card_four)
-    card_list_input.remove(draw_card_five)
-    card_list_input.remove(draw_card_six)
-    for current_combination in itertools.combinations(card_list_input, 1):
-        item_suits = [card[1] for card in current_combination]
-        item_number = [card[0] for card in current_combination]
-        if flush_structure(item_suits) == True:
-            rankings['flush'] += 1
-        if one_pair_structure(item_number) == True:
-            rankings['one_pair'] += 1
-        if two_pair_structure(item_number)== True:
-            rankings['two_one_pair'] += 1
-        if three_of_a_kind_structure(item_number)== True:
-            rankings['three_of_a_kind'] += 1
-        if four_of_a_kind_structure(item_number)== True:
-            rankings['four_of_a_kind'] += 1
-        if full_house_structure(item_number)== True:
-            rankings['full_house'] += 1
-        if straight_structure(item_number)== True:
-            rankings['straight'] += 1
-        if straight_structure(item_number) == True and flush_structure(item_suits) == True:
-            rankings['straight_flush'] += 1
-    return rankings , deck_size
+    rank_value = {
+     "straight_flush": 8,
+        "four_of_a_kind": 7,
+        "full_house": 6,
+        "flush": 5,
+        "straight": 4,
+        "three_of_a_kind": 3,
+        "two_pair": 2,
+        "one_pair": 1,
+        None: 0
+    }
 
-def hand_input_seven_cards(draw_card_one,draw_card_two,draw_card_three,draw_card_four,draw_card_five,draw_card_six,draw_card_seven):
-    """
-    The user knows 7 out of the seven cards in Texas Holdem. We will presume 2 cards in there hand and 5 on the table
-    
-    If the user would like to put in there cards independently.
+    best = None
 
-    """
-    None
+    for five_cards in itertools.combinations(seven_cards, 5):
+
+        suits = [c[1] for c in five_cards]
+        nums = [c[0] for c in five_cards]
+
+        is_flush = flush_structure(five_cards)
+        is_straight = straight_structure(five_cards)
+        is_four = four_of_a_kind_structure(five_cards)
+        is_full = full_house_structure(five_cards)
+        is_three = three_of_a_kind_structure(five_cards)
+        is_two_pair = two_pair_structure(five_cards)
+        is_pair = one_pair_structure(five_cards)
+
+        if is_straight and is_flush:
+            current = "straight_flush"
+        elif is_four:
+            current = "four_of_a_kind"
+        elif is_full:
+            current = "full_house"
+        elif is_flush:
+            current = "flush"
+        elif is_straight:
+            current = "straight"
+        elif is_three:
+            current = "three_of_a_kind"
+        elif is_two_pair:
+            current = "two_pair"
+        elif is_pair:
+            current = "one_pair"
+        else:
+            current = None
+
+        if best is None or rank_value[current] > rank_value[best]:
+            best = current
+
+            # early exit (can't beat straight flush)
+            if best == "straight_flush":
+                return best
+
+    return best
 
 
 
@@ -717,18 +591,12 @@ def draw_hand():
 
 
 
-card_one=[7,'hearts']
-card_two=[8,'spades']
-card_three=[5,'hearts']
-card_four=['Jack','spades']
-card_five=[10,'spades']
-card_six=[4,'spades']
-card_seven=[5,'spades']
-hand_input_two_cards(card_one,card_two)
-hand_input_three_cards(card_one,card_two,card_three)
-hand_input_four_cards(card_one,card_two,card_three,card_four)
-hand_input_five_cards(card_one,card_two,card_three,card_four,card_five)
-hand_input_six_cards(card_one,card_two,card_three,card_four,card_five,card_six)
+card_one=[14 ,'hearts']
+card_two=[2,'spades']
+card_three=[6,'hearts']
+card_four=[8,'spades']
+
+print(evaluate_all_known_cards([card_one , card_two , card_three , card_four]))
 
 
 
