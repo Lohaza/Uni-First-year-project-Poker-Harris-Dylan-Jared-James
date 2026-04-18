@@ -87,7 +87,6 @@ def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
     
     if total_value >= 20 and suit_card_1 == suit_card_2:
         print('Royal Flush')
-        return
     
     if value_card_1 == 14 and value_card_2 <= 5 and suit_card_1 == suit_card_2:
         print('Straight Flush')
@@ -106,7 +105,6 @@ def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
         print('Three of a kind')
         print('Two Pair')
         print('Pair')
-        return
         
     if value_card_1 == 14 and value_card_2 <= 5:
         print('Straight')
@@ -116,6 +114,12 @@ def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
 
     elif difference < 5:
         print('Straight')
+
+    if card_1 == card_1 or card_2 == card_2:
+        print('Four of a kind')
+        print('Three of a kind')
+        print('Two Pair')
+        print('Pair')
 
     else: 
         print('No good indication of potential hands') 
@@ -167,6 +171,7 @@ def hand_checker_for_hole_and_flop_cards(card_1 , card_2 , card_3 , card_4 , car
          '7' : 7 , '8' : 8 , '9' : 9 ,
          '10' : 10 , 'J' : 11 , 'Q' : 12 ,
          'K' : 13 , 'A' : 14}
+                                             
     print('Potential hand(s):')
 
     cards = [(card_1 , suit_card_1) , (card_2 , suit_card_2) , (card_3 , suit_card_3) , (card_4, suit_card_4) , (card_5 , suit_card_5)]
