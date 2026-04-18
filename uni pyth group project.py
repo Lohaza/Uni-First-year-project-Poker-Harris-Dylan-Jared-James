@@ -82,10 +82,10 @@ def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
     print('Potential hand(s):')
     value_card_1 = ranks[card_1]
     value_card_2 = ranks[card_2]
-    total_value = value_card_1 + value_card_2
     difference = abs(value_card_1 - value_card_2)
     
-    if total_value >= 20 and suit_card_1 == suit_card_2:
+    
+    if value_card_1 >= 10 and value_card_2 >= 11  and suit_card_1 == suit_card_2:
         print('Royal Flush')
     
     if value_card_1 == 14 and value_card_2 <= 5 and suit_card_1 == suit_card_2:
@@ -105,6 +105,10 @@ def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
         print('Three of a kind')
         print('Two Pair')
         print('Pair')
+        return 
+
+    if suit_card_1 ==  suit_card_2:
+        print('Flush')
         
     if value_card_1 == 14 and value_card_2 <= 5:
         print('Straight')
