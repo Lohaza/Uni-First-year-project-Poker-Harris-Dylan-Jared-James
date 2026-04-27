@@ -240,16 +240,14 @@ def hand_checker_for_hole_and_flop_cards(card_1 , card_2 , card_3 , card_4 , car
 
 
 
-def probabililty_high_card():
+def starting_probabililty_high_card():
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a high card when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
 
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
-    
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     
     
     """
@@ -260,17 +258,12 @@ def probabililty_high_card():
 
 
 
-def probability_one_pair():
+def starting_probability_one_pair():
 
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a single pair card when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
-
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
-    
     
     
     """
@@ -280,17 +273,12 @@ def probability_one_pair():
     return probability_one_pair_variable
 
 
-def probability_two_pair():
+def starting_probability_two_pair():
 
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a two pair when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
-
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
-    
     
     
     """
@@ -303,18 +291,12 @@ def probability_two_pair():
 
 
 
-def probability_three_of_a_kind():
+def starting_probability_three_of_a_kind():
 
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a three of a kind when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
-
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
-    
-    
     
     """
         
@@ -324,15 +306,12 @@ def probability_three_of_a_kind():
     return probability_three_of_a_kind_variable
 
 
-def probability_straight():
+def starting_probability_straight():
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a straight when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
 
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
     
     """
 
@@ -342,15 +321,11 @@ def probability_straight():
     return probability_straight_variable
 
 
-def probability_flush():
+def starting_probability_flush():
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a flush when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
-
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
     
     """
 
@@ -360,15 +335,12 @@ def probability_flush():
     return probability_flush_variable
 
 
-def probability_full_house():
+def starting_probability_full_house():
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a full house when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
 
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
     
     """
 
@@ -378,16 +350,12 @@ def probability_full_house():
     return probability_full_house_variable
 
 
-def probability_four_of_a_kind():
+def starting_probability_four_of_a_kind():
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a four of a kind when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
 
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
-    
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -396,15 +364,12 @@ def probability_four_of_a_kind():
     return probability_four_of_a_kind_variable
 
 
-def probability_straight_flush():
+def starting_probability_straight_flush():
     """
     ** I am still working on this area of code **
     This code will provide the probability of getting a straight flush when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
-
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
     
     """
 
@@ -414,15 +379,12 @@ def probability_straight_flush():
     return probability_straight_flush_variable
 
 
-def probability_royal_flush():
+def starting_probability_royal_flush():
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a royal flush when all the cards that we will be recieving are still unkown to us.
 
     Paremeters: None.
 
-    I don't really understand the maths here I know why we divide by the total and so on but I don't know how we get the total combinations of high cards.
-    If someone could do more research on this an input it into this docstring it would be most apprecaited.
     
     """
 
