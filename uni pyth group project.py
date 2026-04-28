@@ -232,6 +232,7 @@ def starting_probabililty_high_card():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     
     
     """
@@ -251,6 +252,7 @@ def starting_probability_one_pair():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     
     
     """
@@ -269,6 +271,7 @@ def starting_probability_two_pair():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     
     
     """
@@ -290,6 +293,7 @@ def starting_probability_three_of_a_kind():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently.
+    https://en.wikipedia.org/wiki/Poker_probability
 
     """
         
@@ -307,6 +311,7 @@ def starting_probability_straight():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     
     """
 
@@ -324,6 +329,7 @@ def starting_probability_flush():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -340,6 +346,7 @@ def starting_probability_full_house():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     
     """
 
@@ -357,6 +364,7 @@ def starting_probability_four_of_a_kind():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -373,6 +381,7 @@ def starting_probability_straight_flush():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -389,6 +398,7 @@ def starting_probability_royal_flush():
     Paremeters: None.
 
     The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
+    https://en.wikipedia.org/wiki/Poker_probability
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
