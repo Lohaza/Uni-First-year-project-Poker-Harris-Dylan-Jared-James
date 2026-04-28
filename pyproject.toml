@@ -1,0 +1,18 @@
+[project]
+name = "py_poker_prob"
+version = "0.1.0"
+description = "Probability calculator for getting future ranks in Poker"
+authors = [
+    { name="Harris"},
+    { name="Dylan"},
+    { name="James"},
+    { name="Jared"}
+    ]
+    
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
