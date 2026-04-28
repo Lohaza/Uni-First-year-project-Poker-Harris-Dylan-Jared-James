@@ -409,7 +409,9 @@ def flush_structure(cards):
     into a brand new list called suits, this is achieved by a count control loop inside a list which allows for the elements in the list to be added by how many cards
     there are. If all the suits are the same then the length of the list would equal 1. 
     
-    parameters: None
+    parameters: The hand of the cards provided in a 2 dimentional list. For example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+                Preferably wanting 5 or more cards to make a minimum hand.
 
     """
     suits = [c[1] for c in cards]
@@ -417,6 +419,18 @@ def flush_structure(cards):
 
 
 def one_pair_structure(cards):
+    """ 
+    simple: This function checks if the hand contains a singular pair and if so it will return True.
+
+    This will create a locally stored list called ranks in which is will append the first column of the cards that have been entered which is the value of the card
+    it will then count the frequency of how many times a value comes up. We are then able to see if a value comes up exactly 2 times by using the .count built in python function on the span of the counts.
+    We only want one pair so we check if the list is equal to strictly 1.
+
+    parameters: The hand of the cards provided in a 2 dimentional list. For Example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+                Preferably wanting 5 or more cards to make a minimum hand.
+
+    """
     ranks = [c[0] for c in cards]
     counts = collections.Counter(ranks)
     return list(counts.values()).count(2) == 1
@@ -424,24 +438,72 @@ def one_pair_structure(cards):
 
 
 def two_pair_structure(cards):
+    """ 
+    simple: This function checks if the hand contains a two pairs and if so it will return True.
+
+    This will create a locally stored list called ranks in which is will append the first column of the cards that have been entered which is the value of the card
+    it will then count the frequency of how many times a value comes up. We are then able to see if a value comes up exactly 2 times by using the .count built in python function on the span of the counts.
+    We only want two pair so we check if the list is equal to strictly 2.
+
+    parameters: The hand of the cards provided in a 2 dimentional list. For Example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+                Preferably wanting 5 or more cards to make a minimum hand.
+
+    """
     ranks = [c[0] for c in cards]
     return list(collections.Counter(ranks).values()).count(2) == 2
 
 
 def three_of_a_kind_structure(cards):
+    """
+    simply: This function checks if the hand contains a three identical cards and if so it will return True.
+
+    This will create a locally stored list called ranks in which is will append the first column of the cards that have been entered which is the value of the card
+    it will then count the frequency of how many times a value comes up. if it comes up 3 times it will return True.
+
+    parameters: The hand of the cards provided in a 2 dimentional list. For Example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+                Preferably wanting 5 or more cards to make a minimum hand.
+    """
     return 3 in collections.Counter([c[0] for c in cards]).values()
 
 
 def four_of_a_kind_structure(cards):
+    """
+    simply: This function checks if the hand contains a four identical cards and if so it will return True.
+
+    This will create a locally stored list called ranks in which is will append the first column of the cards that have been entered which is the value of the card
+    it will then count the frequency of how many times a value comes up. if it comes up 4 times it will return True.
+
+    parameters: The hand of the cards provided in a 2 dimentional list. For Example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+                Preferably wanting 5 or more cards to make a minimum hand.
+    """
     return 4 in collections.Counter([c[0] for c in cards]).values()
 
 def full_house_structure(cards):
+    """
+    simply:  This function will check if the hand contains both 3 identical cards and 2 other identical cards.
+
+    This will create a locally stored list called ranks in which is will append the first column of the cards that have been entered which is the value of the card
+    it will then count the frequency of how many times a value comes up which will be stored in a list called counts. It will then check if the first item in the list is 2 and the second is 3 as the list will be
+    ordered it will always following in that way using the keyword sorted.
+
+    parameters: The hand of the cards provided in a 2 dimentional list. For Example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+                Preferably wanting 5 or more cards to make a minimum hand.
+
+    """
     counts = collections.Counter([c[0] for c in cards]).values()
     return sorted(counts) == [2,3]
 
 
 
 def straight_structure(cards):
+    """
+    
+    """
+
 
     if isinstance(cards[0][0], list):
         cards = [c[0] for c in cards]
@@ -457,6 +519,10 @@ def straight_structure(cards):
 
 def evaluate_all_known_cards(known_cards):
     
+    """
+    
+    """
+
     deck = card_list()
     deck = [card for card in deck if card not in known_cards]
     unknown_count = 7 - len(known_cards)
@@ -483,6 +549,9 @@ def evaluate_all_known_cards(known_cards):
 
 def best_rank(seven_cards):
     
+    """
+    
+    """
 
 
     rank_value = {
@@ -530,8 +599,6 @@ def best_rank(seven_cards):
             if best == "straight_flush":
                 return best
     return best
-
-
 
 
 def draw_hand():

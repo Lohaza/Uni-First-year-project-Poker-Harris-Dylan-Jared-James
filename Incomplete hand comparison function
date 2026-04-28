@@ -1,11 +1,3 @@
-"I added this code to the group project code and am not sure how to debug."
-card_one=[4 ,'hearts']
-card_two=[2 ,'spades']
-card_three=[6 ,'hearts']
-card_four=[9 ,'diamonds']
-card_five=[12, 'spades']
-card_six=[13, 'spades']
-
 Hand_one = [card_one, card_two]
 Hand_two = [card_three, card_four]
 Group_cards = [card_five, card_six]
