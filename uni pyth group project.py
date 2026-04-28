@@ -1,4 +1,3 @@
-import pygame
 import random
 import math
 import itertools
@@ -411,7 +410,7 @@ def flush_structure(cards):
     
     parameters: The hand of the cards provided in a 2 dimentional list. For example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                Preferably wanting 5 or more cards to make a minimum hand.
+                This function takes in 7 cards for a hand.
 
     """
     suits = [c[1] for c in cards]
@@ -428,7 +427,7 @@ def one_pair_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                Preferably wanting 5 or more cards to make a minimum hand.
+                This function takes in 7 cards for a hand.
 
     """
     ranks = [c[0] for c in cards]
@@ -447,7 +446,7 @@ def two_pair_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                Preferably wanting 5 or more cards to make a minimum hand.
+                This function takes in 7 cards for a hand.
 
     """
     ranks = [c[0] for c in cards]
@@ -463,7 +462,7 @@ def three_of_a_kind_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                Preferably wanting 5 or more cards to make a minimum hand.
+                This function takes in 7 cards for a hand.
     """
     return 3 in collections.Counter([c[0] for c in cards]).values()
 
@@ -477,7 +476,7 @@ def four_of_a_kind_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                Preferably wanting 5 or more cards to make a minimum hand.
+                This function takes in 7 cards for a hand.
     """
     return 4 in collections.Counter([c[0] for c in cards]).values()
 
@@ -491,7 +490,7 @@ def full_house_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                Preferably wanting 5 or more cards to make a minimum hand.
+                This function takes in 7 cards for a hand.
 
     """
     counts = collections.Counter([c[0] for c in cards]).values()
@@ -501,9 +500,14 @@ def full_house_structure(cards):
 
 def straight_structure(cards):
     """
-    
-    """
+    simply: This function will check if the cards inputted are a straight.
 
+    This is done by making sure that the length of the first column values does not exceed 5.
+    
+    parameters: The hand of the cards provided in a 2 dimentional list. For Example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+                This function takes in 7 cards for a hand.
+    """
 
     if isinstance(cards[0][0], list):
         cards = [c[0] for c in cards]
@@ -520,7 +524,23 @@ def straight_structure(cards):
 def evaluate_all_known_cards(known_cards):
     
     """
+    Simply: This function will generate the amount of future combinations that can happen for each rank by computing every single combination left out of 7 cards poker.
     
+    This function will first use the function card_list which generates a list of all possible cards. It will then re generate the deck without the cards that are known.
+    we will find out how many cards are unknown to us by doing 7 cards which can be the max we can have removing the length of the list of the cards which we do know (total count - known count = unknow count)
+    We are then able to declare a dictionary which has every type of poker ranking there is, this will be used for our output as we can add to this dictionary throughout the code.
+    we can then loop through every unknown combination, this is because we have an equal chance of getting each remaining card in a different order. This is done by using the pre-existing python libary called
+    itertools which has the function .combination which takes the parameters, the list of total remaining cards and how many cards we want in each rotation of our combination which is our unknow cards.
+    we can then use the known cards that was inputed and the current combination of cards to create a hand in which we can input into best rank to check if it follows a specific rank.
+    If it does contain a specific rank then we can store it in the variable rank. If rank does not contain anything like before then we move to the next combination otherwise we manipulate the
+    dictionary 'rankings'. we tell the name rank in rankings dictionary to increment by one and then move on to the next combination.
+    Once all combinations have been ran passed. We can find the total combinations completed by doing the length of the deck choose (nCr, combination formula) the length of the unknown cards.
+    and return both in a tuple which python automatically will do when not suggest how to return a function with 2 return variables.
+
+    parameters: The hand of the cards provided/known in a 2 dimentional list. For Example:
+                [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+
+
     """
 
     deck = card_list()
@@ -550,7 +570,25 @@ def evaluate_all_known_cards(known_cards):
 def best_rank(seven_cards):
     
     """
-    
+    simple: This functions finds the best rank available from 7 cards.
+            Keep in mind, For a rank it will only take it 5 cards which means it has to be a combination of those 7 cards which therefore requires itertools.combinations .
+
+            First we have to create a dictionary to order the values of each rank in how important they are, we call this rank_value.
+            As we declare variables at the start we set best = None which is the item we will return.
+            We are then able to use a count controlled loop of itertools.combinations to find 5 cards out of the list of seven cards which would result in 21 different combinations that need to be cycled through.
+            with each combination we input it into the rank structure functions to produce a result if it has that rank.
+            Then we can use a series of selection statements in a specified order of hierarchy to achieve which is the best rank.
+            These selection statements check whether there is a value contained in that specified rank variable obtained by putting the 5 card combination in the structure functions.
+            Once we have found the best rank it will then be returned to the user or any other function that needs it.
+
+        parameters: The hand of the cards provided/known in a 2 dimentional list. For Example:
+            [[5, 'hearts'],[2,'clubs'],[12,'spades']]
+            This function takes in strictly 7 cards.
+
+
+
+
+
     """
 
 
@@ -601,20 +639,24 @@ def best_rank(seven_cards):
     return best
 
 
-def draw_hand():
+def draw_cards_random(amount):
     """
-    Using the list creation function 'card_list'. This will generate 2 cards at random from the list, remove those cards from the current list, return both the cards and the current list back to the use for further use.
+    Using the list creation function 'card_list'. This will generate amount inputted amount worth of cards at random from the list, remove those cards from the current list, return both the cards and the current list back to the use for further use.
     
-    paremters: None.
+    paremters: amount of cards you want to pick
+    
+    returns: 2 dimentional tuple, the first has the cards that have been picked the second has the remaining card list which is 2 dimentional.
+    
+    Example: ([Cards picked],[remaining list of cards])
     
     """
-
     current_card_list=card_list()
-    draw_card_one=random.choice(current_card_list)
-    current_card_list.remove(draw_card_one)
-    draw_card_two=random.choice(current_card_list)
-    current_card_list.remove(draw_card_two)
-    return draw_card_one,draw_card_two, current_card_list
+    cards_picked=[]
+    for current in range(0,amount):
+        draw_card=random.choice(current_card_list)
+        current_card_list.remove(draw_card)
+        cards_picked.append(draw_card)
+    return cards_picked,current_card_list
     
 
 def probability(evalulate_ranking_total):
@@ -643,106 +685,3 @@ def probability(evalulate_ranking_total):
     return dictionary_rank_probability_return
         
         
-
-
-
-def simulation():
-    """
-    This funcrtion is the main simulation of the game. We can take this as an unbias non scued estimator on how our texas holdem probability counter puts up in a real world
-    experience. 
-    
-    """
-    menu=True
-    pygame.init()
-    canvas = pygame.display.set_mode((1280, 720))
-
-    pygame.display.set_caption("poker Simulation")
-    exit = False
-
-
-
-    pygame.display.flip()
-    
-
-    while not exit:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit = True
-        if menu == True:
-            mouse=pygame.mouse.get_pos()
-
-            background_home_color=(0, 100, 0)
-            black=(0,0,0)
-            white=(255,255,255)
-            Font_home=pygame.font.SysFont('Arial.ttf',50)
-            Font_home_title=pygame.font.SysFont('Arial.ttf',300)
-            canvas.fill(background_home_color)
-
-            title_Home_text=Font_home_title.render('Poker', True, black)
-            title_Home_text_rectangle = title_Home_text.get_rect()
-            title_Home_text_rectangle.center = (665,150)
-            canvas.blit(title_Home_text,title_Home_text_rectangle)
-
-
-            sim_text=Font_home.render('Simulator', True, black)
-            sim_text_rectangle = sim_text.get_rect()
-            sim_text_rectangle.center = (80,25)
-            canvas.blit(sim_text,sim_text_rectangle)
-            if 565 <= mouse[0] <= 765 and 300 <= mouse[1] <= 400 :
-                button_Play_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,300,200,100])
-                button_Play_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,305,190,90])
-                button_Play_text=Font_home.render('Play', True, white)
-                button_Play_text_rectangle = button_Play_text.get_rect()
-                button_Play_text_rectangle.center = (665,350)
-                canvas.blit(button_Play_text,button_Play_text_rectangle)
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    menu=False
-                    Play=True
-            else:
-                button_Play_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,300,200,100])
-                button_Play_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,305,190,90])
-                button_Play_text=Font_home.render('Play', True, black)
-                button_Play_text_rectangle = button_Play_text.get_rect()
-                button_Play_text_rectangle.center = (665,350)
-                canvas.blit(button_Play_text,button_Play_text_rectangle)
-            
-            if 565 <= mouse[0] <= 765 and 450 <= mouse[1] <= 550 : 
-                button_settings_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,450,200,100])
-                button_settings_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,455,190,90])
-                button_Settings_text=Font_home.render('Settings', True, white)
-                button_Settings_text_rectangle = button_Settings_text.get_rect()
-                button_Settings_text_rectangle.center = (665,500)
-                canvas.blit(button_Settings_text,button_Settings_text_rectangle)
-            else:
-                button_settings_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,450,200,100])
-                button_settings_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,455,190,90])
-                button_Settings_text=Font_home.render('Settings', True, black)
-                button_Settings_text_rectangle = button_Settings_text.get_rect()
-                button_Settings_text_rectangle.center = (665,500)
-                canvas.blit(button_Settings_text,button_Settings_text_rectangle)
-
-
-            if 565 <= mouse[0] <= 765 and 600 <= mouse[1] <= 750 :
-                button_quit_outline=pygame.draw.rect(surface=canvas,color=white,rect=[565,600,200,100])
-                button_quit_background=pygame.draw.rect(surface=canvas,color=black,rect=[570,605,190,90])
-                button_Quit_text=Font_home.render('Quit', True, white)
-                button_Quit_text_rectangle = button_Quit_text.get_rect()
-                button_Quit_text_rectangle.center = (665,650)
-                canvas.blit(button_Quit_text,button_Quit_text_rectangle)
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    exit=True
-            else:
-                button_quit_outline=pygame.draw.rect(surface=canvas,color=black,rect=[565,600,200,100])
-                button_quit_background=pygame.draw.rect(surface=canvas,color=white,rect=[570,605,190,90])
-                button_Quit_text=Font_home.render('Quit', True, black)
-                button_Quit_text_rectangle = button_Quit_text.get_rect()
-                button_Quit_text_rectangle.center = (665,650)
-                canvas.blit(button_Quit_text,button_Quit_text_rectangle)
-        elif Play == True:
-            canvas.fill(white)
-            
-
-
-
-        pygame.display.update()
-simulation()
