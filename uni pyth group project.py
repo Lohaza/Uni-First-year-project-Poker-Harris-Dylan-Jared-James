@@ -8,42 +8,27 @@ import collections
 
 def card_list():
     """
-    This function will take the two tuples of the suits and the card numbers to generate a 2 dimentional list.
+        This function will take the two tuples of the suits and the card numbers to generate a 2 dimentional list.
 
-    Paremeters: None.
+        Paremeters: None.
 
-    I have created 2 tuples, tuples are non mutable lists which means that they can NOT change at run time.
-    They also take up less storage than a list as they have a set area in memory and not just linking to free space slots in memory.
-    The reason I made tuples was due to the fact that the cards will never change in a game of poker. They will always be 4 suits of 13 cards
-    which make up 52 cards in total. This allows me to copy these tuples into a list when playing so that when a card is drawn it is removed from
-    that list instead of the tuple which allows for the palyer wanting to start a new game but dosn't want to refresh the code when simulating
-    the game the code will create a fresh new list for them each game from these 2 tuples.
+        I have created 2 tuples, tuples are non mutable lists which means that they can NOT change at run time.
+        They also take up less storage than a list as they have a set area in memory and not just linking to free space slots in memory.
+        The reason I made tuples was due to the fact that the cards will never change in a game of poker. They will always be 4 suits of 13 cards
+        which make up 52 cards in total. This allows me to copy these tuples into a list when playing so that when a card is drawn it is removed from
+        that list instead of the tuple which allows for the palyer wanting to start a new game but dosn't want to refresh the code when simulating
+        the game the code will create a fresh new list for them each game from these 2 tuples.
 
-    
-    """
-def card_list():
-
+        
+        """
     numcardtuple = (2,3,4,5,6,7,8,9,10,11,12,13,14)
     suitcardtuple = ('diamonds','hearts','clubs','spades')
-
     cardlist = []
-
     for suit in suitcardtuple:
         for num in numcardtuple:
             cardlist.append([num, suit])
 
     return cardlist
-
-def probability(rankings,deck_size):
-    rankings_list = list(rankings.items())
-    for rank in rankings_list:
-        print(rank)
-        index_rank=rankings_list.index(rank)
-        new_probability_rank= rank[1]/deck_size
-        rankings_list[index_rank] = new_probability_rank
-    print(rankings_list)
-    return rankings_list
-
 
 def hand_checker_for_hole_cards(card_1 , card_2 , suit_card_1 , suit_card_2):
     """
@@ -262,8 +247,11 @@ def starting_probability_one_pair():
 
     """
     This code will provide the probability of getting a single pair card when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
+
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     
     
     """
@@ -277,8 +265,11 @@ def starting_probability_two_pair():
 
     """
     This code will provide the probability of getting a two pair when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
+
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     
     
     """
@@ -295,9 +286,12 @@ def starting_probability_three_of_a_kind():
 
     """
     This code will provide the probability of getting a three of a kind when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
-    
+
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently.
+
     """
         
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -309,9 +303,11 @@ def starting_probability_three_of_a_kind():
 def starting_probability_straight():
     """
     This code will provide the probability of getting a straight when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
 
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     
     """
 
@@ -324,9 +320,11 @@ def starting_probability_straight():
 def starting_probability_flush():
     """
     This code will provide the probability of getting a flush when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
-    
+
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -338,9 +336,11 @@ def starting_probability_flush():
 def starting_probability_full_house():
     """
     This code will provide the probability of getting a full house when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
 
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     
     """
 
@@ -353,9 +353,11 @@ def starting_probability_full_house():
 def starting_probability_four_of_a_kind():
     """
     This code will provide the probability of getting a four of a kind when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
 
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -366,11 +368,12 @@ def starting_probability_four_of_a_kind():
 
 def starting_probability_straight_flush():
     """
-    ** I am still working on this area of code **
     This code will provide the probability of getting a straight flush when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
-    
+
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -382,10 +385,11 @@ def starting_probability_straight_flush():
 def starting_probability_royal_flush():
     """
     This code will provide the probability of getting a royal flush when all the cards that we will be recieving are still unkown to us.
+    This is when all 7 of the cards are unknow to us but we are wanting a probability counter for the what are the chances of getting this rank.
 
     Paremeters: None.
 
-    
+    The maths formulas used in this function has been taken from the wiki, although have been coded independently. 
     """
 
     total_combinations_of_hand_of_seven_cards=math.comb(52,7)
@@ -398,6 +402,16 @@ def starting_probability_royal_flush():
 
 
 def flush_structure(cards):
+    """
+    simple: This function checks if the hand is a flush and if so it returns True if so.
+
+    This is becausse it checks the second column of the list in which the suits are stored. This is done by extracting the second list item in each card in the hand
+    into a brand new list called suits, this is achieved by a count control loop inside a list which allows for the elements in the list to be added by how many cards
+    there are. If all the suits are the same then the length of the list would equal 1. 
+    
+    parameters: None
+
+    """
     suits = [c[1] for c in cards]
     return len(set(suits)) == 1
 
@@ -431,14 +445,11 @@ def straight_structure(cards):
 
     if isinstance(cards[0][0], list):
         cards = [c[0] for c in cards]
-
     ranks = [c[0] if isinstance(c, list) else c for c in cards]
     ranks = sorted(set(ranks))
-
     for i in range(len(ranks) - 4):
         if all(ranks[i + j] == ranks[i] + j for j in range(5)):
             return True
-
     return set([14,2,3,4,5]).issubset(ranks)
 
 
@@ -448,9 +459,7 @@ def evaluate_all_known_cards(known_cards):
     
     deck = card_list()
     deck = [card for card in deck if card not in known_cards]
-
     unknown_count = 7 - len(known_cards)
-
     rankings = {
         "one_pair": 0,
         "two_pair": 0,
@@ -462,22 +471,13 @@ def evaluate_all_known_cards(known_cards):
         "straight_flush": 0,
         "royal_flush": 0
     }
-
-    for combo in itertools.combinations(deck, unknown_count):
-
-        seven_cards = list(known_cards) + list(combo)
-
+    for current in itertools.combinations(deck, unknown_count):
+        seven_cards = list(known_cards) + list(current)
         rank = best_rank(seven_cards)
-
         if rank:
             rankings[rank] += 1
-
     total = math.comb(len(deck), unknown_count)
-
     return rankings, total
-
-
-
 
 
 
@@ -496,14 +496,10 @@ def best_rank(seven_cards):
         "one_pair": 1,
         None: 0
     }
-
     best = None
-
     for five_cards in itertools.combinations(seven_cards, 5):
-
         suits = [c[1] for c in five_cards]
         nums = [c[0] for c in five_cards]
-
         is_flush = flush_structure(five_cards)
         is_straight = straight_structure(five_cards)
         is_four = four_of_a_kind_structure(five_cards)
@@ -511,7 +507,6 @@ def best_rank(seven_cards):
         is_three = three_of_a_kind_structure(five_cards)
         is_two_pair = two_pair_structure(five_cards)
         is_pair = one_pair_structure(five_cards)
-
         if is_straight and is_flush:
             current = "straight_flush"
         elif is_four:
@@ -530,14 +525,10 @@ def best_rank(seven_cards):
             current = "one_pair"
         else:
             current = None
-
         if best is None or rank_value[current] > rank_value[best]:
             best = current
-
-            # early exit (can't beat straight flush)
             if best == "straight_flush":
                 return best
-
     return best
 
 
@@ -559,16 +550,32 @@ def draw_hand():
     return draw_card_one,draw_card_two, current_card_list
     
 
+def probability(evalulate_ranking_total):
+    """
+    Simple: Produced a probability of your hand for each available rank.
 
+    This function will take in the tuple of both the ranking combinations stored as a dictionary and total combinations that was produced by the previouse evalutaing hand function.
+    This will then make the tuple into a list so that is can be used and seperated if needed. it will divide the rank combination by the total combimations done which will be done to each rank
+    by using a count control loop. This will then be added into a 2 dimentional list of which it has 1 row for each rank, where the first column is the ranks name and the second column
+    is the probabilitiy of getting that rank. 
 
+    parameters: a tuple/list of 2 items, the first being a dictionary which conatains the combinations of each rank and the sencond containing the total combinations done.
+                This is easily achieved by using the evaluate_all_known_cards function.
 
-card_one=[14 ,'hearts']
-card_two=[2,'spades']
-card_three=[6,'hearts']
-card_four=[8,'spades']
-
-print(evaluate_all_known_cards([card_one , card_two , card_three , card_four]))
-
+    """
+    list_rank_probability_return=[]
+    list_evalulate_ranking_total=list(evalulate_ranking_total)
+    evalulate_ranking=list_evalulate_ranking_total[0]
+    evalulate_total=list_evalulate_ranking_total[1]
+    for rank in evalulate_ranking:
+        rank_probability=evalulate_ranking[rank] / evalulate_total
+        list_rank_probability_return.append([rank, rank_probability])
+    dictionary_rank_probability_return = {}
+    for key, value in list_rank_probability_return:
+        dictionary_rank_probability_return[key] = value
+    return dictionary_rank_probability_return
+        
+        
 
 
 
