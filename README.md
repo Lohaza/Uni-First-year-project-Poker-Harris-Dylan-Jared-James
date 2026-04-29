@@ -61,6 +61,8 @@ I will now explain an example of how to use each function properly and according
 
     ""
 
+    This function will return every card in poker via a 2 dimentional list.(52 cards)
+
 ###   Function: pypokerprob.starting_probabililty_{Rank}()
     
     Input:
@@ -78,12 +80,22 @@ I will now explain an example of how to use each function properly and according
 
     ""
 
+    This function will return the starting probability when no cards are known to get a specific rank. In the example given of a high card there is 17.4% or 0.17 when you don't know any cards.
+
 ###   Functions: pypokerprob.{Rank}_structure()
+
+    Parameter(known_cards):
+        This is a 2 dimentional list in which the first column is the card value and the second is the suit.
+        The card value is a number between 2-14 with 11 = Jack, 12 = Queen, 13 = King and 14 = Ace.
+        The suits are 'clubs', 'hearts', 'spades', 'diamonds'.
+
+    Keep in mind this function will only take in a strictly 5 cards no greater of less.
+
 
     Input:
 
     ""
-    cards_structure_flush=[[1, 'clubs'], [8, 'clubs'], [3, 'clubs'], [13, 'clubs'], [10, 'clubs']]
+    cards_structure_flush=[[14, 'clubs'], [8, 'clubs'], [3, 'clubs'], [13, 'clubs'], [10, 'clubs']]
     flush_check=pypokerprob.flush_structure(cards_structure_flush)
     print(flush_check)
 
@@ -96,7 +108,51 @@ I will now explain an example of how to use each function properly and according
 
     ""
 
--   Function:
+    This function will check to see if the 5 cards you have match the specified rank. In the example given we checked to see if the 5 cards we inputted were the equivilant to a flush in which they were so the function returned back True.
+
+###   Function: pypokerprob.evaluate_all_known_cards(known_cards)
+
+    Parameter(known_cards):
+        This is a 2 dimentional list in which the first column is the card value and the second is the suit.
+        The card value is a number between 2-14 with 11 = Jack, 12 = Queen, 13 = King and 14 = Ace.
+        The suits are 'clubs', 'hearts', 'spades', 'diamonds'.
+
+    Input:
+
+    ""
+    cards_evaluate_one = [[5, 'hearts'], [3, 'hearts'], [14, 'hearts'], [7, 'hearts']]
+    print(pypokerprob.evaluate_all_known_cards(cards_evaluate_one))
+
+    ""
+
+    Output:
+
+    ""
+
+    ({'one_pair': 4284, 'two_pair': 1890, 'three_of_a_kind': 333, 'straight': 630, 'flush': 8065, 'full_house': 108, 'four_of_a_kind': 4, 'straight_flush': 92, 'royal_flush': 0}, 17296)
+
+    ""
+
+### Function: pypokerprob.pypokerprob.draw_cards_random(amount)
+
+    Input:
+
+    ""
+    chosen_cards=pypokerprob.draw_cards_random(7)
+    print(chosen_cards)
+
+    ""
+
+    Output:
+
+    ""
+
+    ([[13, 'diamonds'], [12, 'hearts'], [4, 'spades'], [6, 'hearts'], [9, 'spades'], [14, 'spades'], [8, 'spades']], [[2, 'diamonds'], [3, 'diamonds'], [4, 'diamonds'], [5, 'diamonds'], [6, 'diamonds'], [7, 'diamonds'], [8, 'diamonds'], [9, 'diamonds'], [10, 'diamonds'], [11, 'diamonds'], [12, 'diamonds'], [14, 'diamonds'], [2, 'hearts'], [3, 'hearts'], [4, 'hearts'], [5, 'hearts'], [7, 'hearts'], [8, 'hearts'], [9, 'hearts'], [10, 'hearts'], [11, 'hearts'], [13, 'hearts'], [14, 'hearts'], [2, 'clubs'], [3, 'clubs'], [4, 'clubs'], [5, 'clubs'], [6, 'clubs'], [7, 'clubs'], [8, 'clubs'], [9, 'clubs'], [10, 'clubs'], [11, 'clubs'], [12, 'clubs'], [13, 'clubs'], [14, 'clubs'], [2, 'spades'], [3, 'spades'], [5, 'spades'], [6, 'spades'], [7, 'spades'], [10, 'spades'], [11, 'spades'], [12, 'spades'], [13, 'spades']])
+
+    ""
+
+
+### Function: pypokerprob.best_rank(seven_cards)
 
     Input:
 
@@ -107,5 +163,20 @@ I will now explain an example of how to use each function properly and according
     Output:
 
     ""
+
+    ""
+
+### Function: pypokerprob.robability(evalulate_ranking_total)
+
+    Input:
+
+    ""
+
+    ""
+
+    Output:
+
+    ""
+
 
     ""
