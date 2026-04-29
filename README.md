@@ -133,6 +133,8 @@ I will now explain an example of how to use each function properly and according
 
     ""
 
+    This function will return a tuple which contains 2 seprate elements. The first being a dictionary containing the ranks and how many times that specific rank came up in the total amount of combinations. The second containing a number for the total amount of combinations.
+
 ### Function: pypokerprob.pypokerprob.draw_cards_random(amount)
 
     Input:
@@ -157,6 +159,9 @@ I will now explain an example of how to use each function properly and according
     Input:
 
     ""
+    cards_for_best_rank=[[14, 'hearts'], [3, 'clubs'], [14, 'spades'], [14, 'clubs'], [3, 'clubs']]
+    best_rank=pypokerprob.best_rank(cards_for_best_rank)
+    print(best_rank)
 
     ""
 
@@ -164,9 +169,11 @@ I will now explain an example of how to use each function properly and according
 
     ""
 
+    full_house
+
     ""
 
-### Function: pypokerprob.robability(evalulate_ranking_total)
+### Function: pypokerprob.probability(evalulate_ranking_total)
 
     Input:
 

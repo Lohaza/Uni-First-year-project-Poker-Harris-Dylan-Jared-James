@@ -15,3 +15,7 @@ print(flush_check)
 
 chosen_cards=pypokerprob.draw_cards_random(7)
 print(chosen_cards)
+
+cards_for_best_rank=[[14, 'hearts'], [3, 'clubs'], [14, 'spades'], [14, 'clubs'], [3, 'clubs']]
+best_rank=pypokerprob.best_rank(cards_for_best_rank)
+print(best_rank)
