@@ -424,7 +424,7 @@ def flush_structure(cards):
                 This function takes in 5 cards for a hand.
 
     """
-    suits = [c[1] for c in cards]
+    suits = [current[1] for current in cards]
     return len(set(suits)) == 1
 
 def one_pair_structure(cards):
@@ -440,7 +440,7 @@ def one_pair_structure(cards):
                 This function takes in 5 cards for a hand.
 
     """
-    ranks = [c[0] for c in cards]
+    ranks = [current[0] for current in cards]
     counts = collections.Counter(ranks)
     return list(counts.values()).count(2) == 1
 
@@ -459,7 +459,7 @@ def two_pair_structure(cards):
                 This function takes in 5 cards for a hand.
 
     """
-    ranks = [c[0] for c in cards]
+    ranks = [current[0] for current in cards]
     return list(collections.Counter(ranks).values()).count(2) == 2
 
 
@@ -474,7 +474,7 @@ def three_of_a_kind_structure(cards):
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
                 This function takes in 5 cards for a hand.
     """
-    return 3 in collections.Counter([c[0] for c in cards]).values()
+    return 3 in collections.Counter([current[0] for current in cards]).values()
 
 
 def four_of_a_kind_structure(cards):
@@ -488,7 +488,7 @@ def four_of_a_kind_structure(cards):
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
                 This function takes in 5 cards for a hand.
     """
-    return 4 in collections.Counter([c[0] for c in cards]).values()
+    return 4 in collections.Counter([current[0] for current in cards]).values()
 
 def full_house_structure(cards):
     """
@@ -503,7 +503,7 @@ def full_house_structure(cards):
                 This function takes in 5 cards for a hand.
 
     """
-    counts = collections.Counter([c[0] for c in cards]).values()
+    counts = collections.Counter([current[0] for current in cards]).values()
     return sorted(counts) == [2,3]
 
 
@@ -520,8 +520,8 @@ def straight_structure(cards):
     """
 
     if isinstance(cards[0][0], list):
-        cards = [c[0] for c in cards]
-    ranks = [c[0] if isinstance(c, list) else c for c in cards]
+        cards = [current[0] for current in cards]
+    ranks = [current[0] if isinstance(current, list) else current for current in cards]
     ranks = sorted(set(ranks))
     for i in range(len(ranks) - 4):
         if all(ranks[i + j] == ranks[i] + j for j in range(5)):
@@ -591,6 +591,8 @@ def best_rank(seven_cards):
             These selection statements check whether there is a value contained in that specified rank variable obtained by putting the 5 card combination in the structure functions.
             Once we have found the best rank it will then be returned to the user or any other function that needs it.
 
+            suits and nums are not in use but could be changed later to make a more updated versions of the code or make it something usefull in the future.
+
         parameters: The hand of the cards provided/known in a 2 dimentional list. For Example:
             [[5, 'hearts'],[2,'clubs'],[12,'spades']]
             This function takes in strictly 7 cards.
@@ -615,8 +617,8 @@ def best_rank(seven_cards):
     }
     best = None
     for five_cards in itertools.combinations(seven_cards, 5):
-        suits = [c[1] for c in five_cards]
-        nums = [c[0] for c in five_cards]
+        suits = [current[1] for current in five_cards]
+        nums = [current[0] for current in five_cards]
         is_flush = flush_structure(five_cards)
         is_straight = straight_structure(five_cards)
         is_four = four_of_a_kind_structure(five_cards)
