@@ -437,7 +437,7 @@ def one_pair_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                This function takes in 7 cards for a hand.
+                This function takes in 5 cards for a hand.
 
     """
     ranks = [c[0] for c in cards]
@@ -456,7 +456,7 @@ def two_pair_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                This function takes in 7 cards for a hand.
+                This function takes in 5 cards for a hand.
 
     """
     ranks = [c[0] for c in cards]
@@ -472,7 +472,7 @@ def three_of_a_kind_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                This function takes in 7 cards for a hand.
+                This function takes in 5 cards for a hand.
     """
     return 3 in collections.Counter([c[0] for c in cards]).values()
 
@@ -486,7 +486,7 @@ def four_of_a_kind_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                This function takes in 7 cards for a hand.
+                This function takes in 5 cards for a hand.
     """
     return 4 in collections.Counter([c[0] for c in cards]).values()
 
@@ -500,7 +500,7 @@ def full_house_structure(cards):
 
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                This function takes in 7 cards for a hand.
+                This function takes in 5 cards for a hand.
 
     """
     counts = collections.Counter([c[0] for c in cards]).values()
@@ -516,7 +516,7 @@ def straight_structure(cards):
     
     parameters: The hand of the cards provided in a 2 dimentional list. For Example:
                 [[5, 'hearts'],[2,'clubs'],[12,'spades']]
-                This function takes in 7 cards for a hand.
+                This function takes in 5 cards for a hand.
     """
 
     if isinstance(cards[0][0], list):
