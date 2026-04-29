@@ -44,9 +44,7 @@ Before you use any functions you must type at the top of your script:
 
 I will now explain an example of how to use each function properly and accordingly.
 
--   Function:
-
-    pypokerprob.card_list()
+###   Function: pypokerprob.card_list()
 
     Input:
 
@@ -63,17 +61,51 @@ I will now explain an example of how to use each function properly and according
 
     ""
 
--   Function:
+###   Function: pypokerprob.starting_probabililty_{Rank}()
     
     Input:
 
     ""
+    starting_prob_high=pypokerprob.starting_probabililty_high_card()
+    print(starting_prob_high)
 
     ""
 
     Ouput:
 
     ""
+    0.17411919581751437
 
     ""
-    
+
+###   Functions: pypokerprob.{Rank}_structure()
+
+    Input:
+
+    ""
+    cards_structure_flush=[[1, 'clubs'], [8, 'clubs'], [3, 'clubs'], [13, 'clubs'], [10, 'clubs']]
+    flush_check=pypokerprob.flush_structure(cards_structure_flush)
+    print(flush_check)
+
+    ""
+
+    Ouput:
+
+    ""
+    True
+
+    ""
+
+-   Function:
+
+    Input:
+
+    ""
+
+    ""
+
+    Output:
+
+    ""
+
+    ""

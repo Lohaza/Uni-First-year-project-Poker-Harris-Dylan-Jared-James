@@ -1,5 +1,5 @@
 [project]
-name = "py_poker_prob"
+name = "pypokerprob"
 version = "0.1.0"
 description = "Probability calculator for getting future ranks in Poker"
 authors = [
