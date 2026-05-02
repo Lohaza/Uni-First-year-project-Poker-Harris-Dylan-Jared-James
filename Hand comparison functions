@@ -1,0 +1,3294 @@
+"These functions compare a certain number of hands. The 1000 runs function is for when it would take too long to do every combination. We can increase this number if we think that more runs won't take too long.
+"Five way ties are very unlikely, but the functions can do a five way tie. The function "double dips" on ties and you can't have a one way tie, so that's why three way ties are len(ties) = 4, A six way tie is even more unlikely, so I didn't write it into the code."
+import sympy as sym
+import statistics as st
+import random
+import math
+import itertools
+import collections
+"You need these function as well: card_list and the structure functions."
+def best_rank_and_hand(seven_cards):
+    
+    best = sym.Symbol("best")
+    current = sym.Symbol("current")
+    current = 0
+    best = -1
+    best_hand = sym.Symbol("best_hand")
+    best_number = sym.Symbol("best_number")
+    best_number_current = sym.Symbol("best_number_current")
+    for five_cards in itertools.combinations(seven_cards, 5):
+        suits = [c[1] for c in five_cards]
+        nums = [c[0] for c in five_cards]
+
+        is_flush = flush_structure(five_cards)
+        is_straight = straight_structure(five_cards)
+        is_four = four_of_a_kind_structure(five_cards)
+        is_full = full_house_structure(five_cards)
+        is_three = three_of_a_kind_structure(five_cards)
+        is_two_pair = two_pair_structure(five_cards)
+        is_pair = one_pair_structure(five_cards)
+
+        if is_straight and is_flush:
+            current = 8
+        elif is_four:
+            current = 7
+        elif is_full:
+            current = 6
+        elif is_flush:
+            current = 5
+        elif is_straight:
+            current = 4
+        elif is_three:
+            current = 3
+        elif is_two_pair:
+            current = 2
+        elif is_pair:
+            current = 1
+        else:
+            current = 0
+        current_hand = five_cards
+        if current > best:
+            best = current
+            best_hand = five_cards
+        elif  current == best:
+            if best == 0 or 5:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                if hand_ranks_current[0] > hand_ranks[0]:
+                    best_hand = five_cards
+                elif hand_ranks_current[0] == hand_ranks[0]:
+                    if hand_ranks_current[1] > hand_ranks[1]:
+                        best_hand = five_cards
+                    elif hand_ranks_current[1] == hand_ranks[1]:
+                        if hand_ranks_current[2] > hand_ranks[2]:
+                            best_hand = five_cards
+                        elif hand_ranks_current[2] == hand_ranks[2]:
+                            if hand_ranks_current[3] > hand_ranks[3]:
+                                best_hand = five_cards
+                            elif hand_ranks_current[3] == hand_ranks[3]:
+                                if hand_ranks_current[4] > hand_ranks[4]:
+                                    best_hand = five_cards
+            elif best == 1 or 3 or 6 or 7:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                best_number = st.mode(hand_ranks)
+                best_number_current = st.mode(hand_ranks_current)
+                if st.mode(hand_ranks_current) > st.mode(hand_ranks):
+                    best_hand = five_cards
+                if st.mode(hand_ranks_current) < st.mode(hand_ranks):
+                    best_hand = best_hand
+                if hand_ranks_current[0] > hand_ranks[0]:
+                    best_hand = five_cards
+                elif hand_ranks_current[0] == hand_ranks[0]:
+                    if hand_ranks_current[1] > hand_ranks[1]:
+                        best_hand = five_cards
+                    elif hand_ranks_current[1] == hand_ranks[1]:
+                        if hand_ranks_current[2] > hand_ranks[2]:
+                            best_hand = five_cards
+                        elif hand_ranks_current[2] == hand_ranks[2]:
+                            if hand_ranks_current[3] > hand_ranks[3]:
+                                best_hand = five_cards
+                            elif hand_ranks_current[3] == hand_ranks[3]:
+                                if hand_ranks_current[4] > hand_ranks[4]:
+                                    best_hand = five_cards
+            elif best == 2:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                if st.mode(hand_ranks_current) > st.mode(hand_ranks):
+                    best_hand = five_cards
+                if st.mode(hand_ranks_current) < st.mode(hand_ranks):
+                    best_hand = best_hand
+                elif st.mode(hand_ranks_current) == st.mode(hand_ranks):
+                    tie_break = list(hand_ranks)
+                    tie_break_current = list(hand_ranks_current)
+                    del tie_break[0: 2]
+                    del tie_break_current[0: 2]
+                    if st.mode(tie_break_current) > st.mode(tie_break):
+                        best_hand = five_cards
+                    if st.mode(tie_break_current) < st.mode(tie_break):
+                        best_hand = best_hand                    
+                    elif st.mode(tie_break_current) == st.mode(tie_break):
+                        if hand_ranks_current[0] > hand_ranks[0]:
+                            best_hand = five_cards
+                        elif hand_ranks_current[0] == hand_ranks[0]:
+                            if hand_ranks_current[2] > hand_ranks[2]:
+                                best_hand = five_cards
+                            elif hand_ranks_current[2] == hand_ranks[2]:
+                                if hand_ranks_current[4] > hand_ranks[4]:
+                                    best_hand = five_cards
+            elif best == 4 or 8:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                if hand_ranks[0] - hand_ranks[4] == 12:
+                    del hand_ranks[0]
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                if hand_ranks_current[0] - hand_ranks_current[4] == 12:
+                    del hand_ranks_current[0]
+                if hand_ranks_current[0] > hand_ranks[0]:
+                    best_hand = five_cards                                                                                
+    return best, best_hand
+
+def two_hands_compared(known_cards_Hand_one, known_cards_Hand_two, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    rank_player_one = sym.Symbol("rank_player_one")
+    rank_player_two = sym.Symbol("rank_player_two")
+    hand_info_player_one = sym.Symbol("hand_info_player_one")
+    hand_info_player_two = sym.Symbol("hand_info_player_two")
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        rank_player_one = hand_info_player_one[0]
+        hand_player_one = hand_info_player_one[1]
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        rank_player_two = hand_info_player_two[0]
+        hand_player_two = hand_info_player_two[1]
+        if rank_player_one > rank_player_two:
+            rankings["player_one"] += 1
+        elif rank_player_two > rank_player_one:
+            rankings["player_two"] += 1
+        elif rank_player_two == rank_player_one:
+            best_hand = hand_player_one
+            current_hand = hand_player_two
+            if rank_player_one == 0 or 5:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                if hand_ranks_current[0] < hand_ranks[0]:
+                    rankings["player_one"] += 1
+                elif hand_ranks_current[0] > hand_ranks[0]:
+                    rankings["player_two"] += 1
+                elif hand_ranks_current[0] == hand_ranks[0]:
+                    if hand_ranks_current[1] < hand_ranks[1]:
+                        rankings["player_one"] += 1
+                    elif hand_ranks_current[1] > hand_ranks[1]:
+                        rankings["player_two"] += 1
+                    elif hand_ranks_current[1] == hand_ranks[1]:
+                        if hand_ranks_current[2] < hand_ranks[2]:
+                            rankings["player_one"] += 1
+                        elif hand_ranks_current[2] > hand_ranks[2]:
+                            rankings["player_two"] += 1
+                        elif hand_ranks_current[2] == hand_ranks[2]:
+                            if hand_ranks_current[3] < hand_ranks[3]:
+                                rankings["player_one"] += 1
+                            elif hand_ranks_current[3] > hand_ranks[3]:
+                                rankings["player_two"] += 1
+                            elif hand_ranks_current[3] == hand_ranks[3]:
+                                if hand_ranks_current[4] < hand_ranks[4]:
+                                    rankings["player_one"] += 1
+                                elif hand_ranks_current[4] > hand_ranks[4]:
+                                    rankings["player_two"] += 1
+            elif rank_player_one == 1 or 3 or 6 or 7:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                best_number = st.mode(hand_ranks)
+                best_number_current = st.mode(hand_ranks_current)
+                if st.mode(hand_ranks_current) > st.mode(hand_ranks):
+                    rankings["player_two"] += 1
+                if st.mode(hand_ranks_current) < st.mode(hand_ranks):
+                    rankings["player_one"] += 1
+                elif st.mode(hand_ranks_current) == st.mode(hand_ranks):
+                    if hand_ranks_current[0] > hand_ranks[0]:
+                        rankings["player_two"] += 1
+                    if hand_ranks_current[0] < hand_ranks[0]:
+                        rankings["player_one"] += 1
+                    elif hand_ranks_current[0] == hand_ranks[0]:
+                        if hand_ranks_current[1] < hand_ranks[1]:
+                            rankings["player_one"] += 1
+                        elif hand_ranks_current[1] > hand_ranks[1]:
+                            rankings["player_two"] += 1
+                        elif hand_ranks_current[1] == hand_ranks[1]:
+                            if hand_ranks_current[2] < hand_ranks[2]:
+                                rankings["player_one"] += 1
+                            elif hand_ranks_current[2] > hand_ranks[2]:
+                                rankings["player_two"] += 1
+                            elif hand_ranks_current[2] == hand_ranks[2]:
+                                if hand_ranks_current[3] < hand_ranks[3]:
+                                    rankings["player_one"] += 1
+                                elif hand_ranks_current[3] > hand_ranks[3]:
+                                    rankings["player_two"] += 1
+                                elif hand_ranks_current[3] == hand_ranks[3]:
+                                    if hand_ranks_current[4] < hand_ranks[4]:
+                                        rankings["player_one"] += 1
+                                    elif hand_ranks_current[4] > hand_ranks[4]:
+                                        rankings["player_two"] += 1
+            elif rank_player_one == 2:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                if st.mode(hand_ranks_current) > st.mode(hand_ranks):
+                    rankings["player_two"] += 1
+                elif st.mode(hand_ranks_current) < st.mode(hand_ranks):
+                    rankings["player_one"] += 1
+                elif st.mode(hand_ranks_current) == st.mode(hand_ranks):
+                    tie_break = list(hand_ranks)
+                    tie_break_current = list(hand_ranks_current)
+                    del tie_break[0: 2]
+                    del tie_break_current[0: 2]
+                    if st.mode(tie_break_current) > st.mode(tie_break):
+                        rankings["player_two"] += 1
+                    elif st.mode(tie_break_current) < st.mode(tie_break):
+                        rankings["player_one"] += 1                    
+                    elif st.mode(tie_break_current) == st.mode(tie_break):
+                        if hand_ranks_current[0] > hand_ranks[0]:
+                            rankings["player_one"] += 1
+                        elif hand_ranks_current[0] < hand_ranks[0]:
+                            rankings["player_two"] += 1
+                        elif hand_ranks_current[0] == hand_ranks[0]:
+                            if hand_ranks_current[2] > hand_ranks[2]:
+                                rankings["player_two"] += 1
+                            elif hand_ranks_current[2] < hand_ranks[2]:
+                                rankings["player_one"] += 1
+                            elif hand_ranks_current[2] == hand_ranks[2]:
+                                if hand_ranks_current[4] > hand_ranks[4]:
+                                    rankings["player_two"] += 1
+                                elif hand_ranks_current[4] < hand_ranks[4]:
+                                    rankings["player_one"] += 1
+            elif rank_player_one == 4 or 8:
+                hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                if hand_ranks[0] - hand_ranks[4] == 12:
+                    del hand_ranks[0]
+                hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                if hand_ranks_current[0] - hand_ranks_current[4] == 12:
+                    del hand_ranks_current[0]
+                if hand_ranks_current[0] > hand_ranks[0]:
+                    rankings["player_two"] += 1
+                elif hand_ranks_current[0] < hand_ranks[0]:
+                    rankings["player_one"] += 1
+
+
+    total = math.comb(len(deck), unknown_count)
+    rankings["ties"] = total - rankings["player_one"] - rankings["player_two"]
+
+    return rankings, total
+Example of how to input: two_hands_compared([card_one, card_two], [card_three, card_four], [card_five, card_six, card_seven])
+
+def two_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "ties": 0
+    }
+    combinations = list(itertools.combinations(deck, unknown_count))
+    for i in range(1000):
+            combo = random.choice(combinations)
+            seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+    
+            hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+            rank_player_one = hand_info_player_one[0]
+            hand_player_one = hand_info_player_one[1]
+            seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+    
+            hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+            rank_player_two = hand_info_player_two[0]
+            hand_player_two = hand_info_player_two[1]
+            if rank_player_one > rank_player_two:
+                rankings["player_one"] += 1
+            elif rank_player_two > rank_player_one:
+                rankings["player_two"] += 1
+            elif rank_player_two == rank_player_one:
+                best_hand = hand_player_one
+                current_hand = hand_player_two
+                if rank_player_one == 0 or 5:
+                    hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                    hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                    if hand_ranks_current[0] < hand_ranks[0]:
+                        rankings["player_one"] += 1
+                    elif hand_ranks_current[0] > hand_ranks[0]:
+                        rankings["player_two"] += 1
+                    elif hand_ranks_current[0] == hand_ranks[0]:
+                        if hand_ranks_current[1] < hand_ranks[1]:
+                            rankings["player_one"] += 1
+                        elif hand_ranks_current[1] > hand_ranks[1]:
+                            rankings["player_two"] += 1
+                        elif hand_ranks_current[1] == hand_ranks[1]:
+                            if hand_ranks_current[2] < hand_ranks[2]:
+                                rankings["player_one"] += 1
+                            elif hand_ranks_current[2] > hand_ranks[2]:
+                                rankings["player_two"] += 1
+                            elif hand_ranks_current[2] == hand_ranks[2]:
+                                if hand_ranks_current[3] < hand_ranks[3]:
+                                    rankings["player_one"] += 1
+                                elif hand_ranks_current[3] > hand_ranks[3]:
+                                    rankings["player_two"] += 1
+                                elif hand_ranks_current[3] == hand_ranks[3]:
+                                    if hand_ranks_current[4] < hand_ranks[4]:
+                                        rankings["player_one"] += 1
+                                    elif hand_ranks_current[4] > hand_ranks[4]:
+                                        rankings["player_two"] += 1
+                elif rank_player_one == 1 or 3 or 6 or 7:
+                    hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                    hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                    if st.mode(hand_ranks_current) > st.mode(hand_ranks):
+                        rankings["player_two"] += 1
+                    elif st.mode(hand_ranks_current) < st.mode(hand_ranks):
+                        rankings["player_one"] += 1
+                    elif st.mode(hand_ranks_current) == st.mode(hand_ranks):
+                        if hand_ranks_current[0] > hand_ranks[0]:
+                            rankings["player_two"] += 1
+                        if hand_ranks_current[0] < hand_ranks[0]:
+                            rankings["player_one"] += 1
+                        elif hand_ranks_current[0] == hand_ranks[0]:
+                            if hand_ranks_current[1] < hand_ranks[1]:
+                                rankings["player_one"] += 1
+                            elif hand_ranks_current[1] > hand_ranks[1]:
+                                rankings["player_two"] += 1
+                            elif hand_ranks_current[1] == hand_ranks[1]:
+                                if hand_ranks_current[2] < hand_ranks[2]:
+                                    rankings["player_one"] += 1
+                                elif hand_ranks_current[2] > hand_ranks[2]:
+                                    rankings["player_two"] += 1
+                                elif hand_ranks_current[2] == hand_ranks[2]:
+                                    if hand_ranks_current[3] < hand_ranks[3]:
+                                        rankings["player_one"] += 1
+                                    elif hand_ranks_current[3] > hand_ranks[3]:
+                                        rankings["player_two"] += 1
+                                    elif hand_ranks_current[3] == hand_ranks[3]:
+                                        if hand_ranks_current[4] < hand_ranks[4]:
+                                            rankings["player_one"] += 1
+                                        elif hand_ranks_current[4] > hand_ranks[4]:
+                                            rankings["player_two"] += 1
+
+                elif rank_player_one == 2:
+                    hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                    hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                    if st.mode(hand_ranks_current) > st.mode(hand_ranks):
+                        rankings["player_two"] += 1
+                    elif st.mode(hand_ranks_current) < st.mode(hand_ranks):
+                        rankings["player_one"] += 1
+                    elif st.mode(hand_ranks_current) == st.mode(hand_ranks):
+                        tie_break = list(hand_ranks)
+                        tie_break_current = list(hand_ranks_current)
+                        del tie_break[0: 2]
+                        del tie_break_current[0: 2]
+                        if st.mode(tie_break_current) > st.mode(tie_break):
+                            rankings["player_two"] += 1
+                        elif st.mode(tie_break_current) < st.mode(tie_break):
+                            rankings["player_one"] += 1                    
+                        elif st.mode(tie_break_current) == st.mode(tie_break):
+                            if hand_ranks_current[0] > hand_ranks[0]:
+                                rankings["player_one"] += 1
+                            elif hand_ranks_current[0] < hand_ranks[0]:
+                                rankings["player_two"] += 1
+                            elif hand_ranks_current[0] == hand_ranks[0]:
+                                if hand_ranks_current[2] > hand_ranks[2]:
+                                    rankings["player_two"] += 1
+                                elif hand_ranks_current[2] < hand_ranks[2]:
+                                    rankings["player_one"] += 1
+                                elif hand_ranks_current[2] == hand_ranks[2]:
+                                    if hand_ranks_current[4] > hand_ranks[4]:
+                                        rankings["player_two"] += 1
+                                    elif hand_ranks_current[4] < hand_ranks[4]:
+                                        rankings["player_one"] += 1
+
+                elif rank_player_one == 4 or 8:
+                    hand_ranks = sorted([c[0] for c in best_hand], reverse = True)
+                    if hand_ranks[0] - hand_ranks[4] == 12:
+                        del hand_ranks[0]
+                    hand_ranks_current = sorted([c[0] for c in current_hand], reverse = True)
+                    if hand_ranks_current[0] - hand_ranks_current[4] == 12:
+                        del hand_ranks_current[0]
+                    if hand_ranks_current[0] > hand_ranks[0]:
+                        rankings["player_two"] += 1
+                    elif hand_ranks_current[0] < hand_ranks[0]:
+                        rankings["player_one"] += 1
+    rankings["ties"] = 1000 - rankings["player_one"] - rankings["player_two"]
+            
+    return rankings, 1000       
+
+def better_hand(best_overall, current_overall, ties):
+    best_rank = best_overall[0]
+    best_hand = best_overall[1]
+    current_rank = current_overall[0]
+    current_hand = current_overall[1]
+    if best_rank > current_rank:
+        best_overall = best_overall
+    elif current_rank > best_rank:
+        best_overall = current_overall
+        ties = []
+    elif best_overall == current_overall:
+        if best_overall == 0 or 5:
+            best_hand = sorted([c[0] for c in best_hand], reverse = True)
+            current_hand = sorted([c[0] for c in current_hand], reverse = True)
+            if current_hand[0] < best_hand[0]:
+                best_overall = best_overall
+            elif current_hand[0] > best_hand[0]:
+                best_overall = current_overall
+                ties = []
+            elif current_hand[0] == best_hand[0]:
+                if current_hand[1] < best_hand[1]:
+                    best_overall = best_overall
+                elif current_hand[1] > best_hand[1]:
+                    best_overall = current_overall
+                    ties = []
+                elif current_hand[1] == best_hand[1]:
+                    if current_hand[2] < best_hand[2]:
+                        best_overall = best_overall
+                    elif current_hand[2] > best_hand[2]:
+                        best_overall = current_overall
+                        ties = []
+                    elif current_hand[2] == best_hand[2]:
+                        if current_hand[3] < best_hand[3]:
+                            best_overall = best_overall
+                        elif current_hand[3] > best_hand[3]:
+                            best_overall = current_overall
+                            ties = []
+                        elif current_hand[3] == best_hand[3]:
+                            if current_hand[4] < best_hand[4]:
+                                best_overall = best_overall
+                            elif current_hand[4] > best_hand[4]:
+                                best_overall = current_overall
+                                ties = []
+                            else: 
+                                new_ties = [best_overall, current_overall]
+                                ties.extend(new_ties)
+        elif rank_player_one == 1 or 3 or 6 or 7:
+            best_hand = sorted([c[0] for c in best_hand], reverse = True)
+            current_hand = sorted([c[0] for c in current_hand], reverse = True)
+            if st.mode(current_hand) > st.mode(best_hand):
+                best_overall = current_overall
+                ties = []
+            elif st.mode(current_hand) < st.mode(best_hand):
+                best_overall = best_overall
+            elif st.mode(current_hand) == st.mode(best_hand):
+                if current_hand[0] > best_hand[0]:
+                    best_overall = current_overall
+                if current_hand[0] < best_hand[0]:
+                    best_overall = best_overall
+                elif current_hand[0] == best_hand[0]:
+                    if current_hand[1] < best_hand[1]:
+                        best_overall = best_overall
+                    elif current_hand[1] > best_hand[1]:
+                        best_overall = current_overall
+                        ties = []
+                    elif current_hand[1] == best_hand[1]:
+                        if current_hand[2] < best_hand[2]:
+                            best_overall = best_overall
+                        elif current_hand[2] > best_hand[2]:
+                            best_overall = current_overall
+                            ties = []
+                        elif current_hand[2] == best_hand[2]:
+                            if current_hand[3] < best_hand[3]:
+                                best_overall = best_overall
+                            elif current_hand[3] > best_hand[3]:
+                                best_overall = current_overall
+                                ties = []
+                            elif current_hand[3] == best_hand[3]:
+                                if current_hand[4] < best_hand[4]:
+                                    best_overall = best_overall
+                                elif current_hand[4] > best_hand[4]:
+                                    best_overall = current_overall
+                                    ties = []
+                                else: 
+                                    new_ties = [best_overall, current_overall]
+                                    ties.extend(new_ties)
+
+        elif rank_player_one == 2:
+            best_hand = sorted([c[0] for c in best_overall], reverse = True)
+            current_hand = sorted([c[0] for c in current_overall], reverse = True)
+            if st.mode(current_hand) > st.mode(best_hand):
+                best_overall = current_overall
+                ties = []
+            elif st.mode(current_hand) < st.mode(best_hand):
+                best_overall = best_overall
+            elif st.mode(current_hand) == st.mode(best_hand):
+                tie_break = list(best_hand)
+                tie_break_current = list(current_hand)
+                del tie_break[0: 2]
+                del tie_break_current[0: 2]
+                if st.mode(tie_break_current) > st.mode(tie_break):
+                    best_overall = current_overall
+                    ties = []
+                elif st.mode(tie_break_current) < st.mode(tie_break):
+                    best_overall = best_overall                 
+                elif st.mode(tie_break_current) == st.mode(tie_break):
+                    if current_hand[0] > best_hand[0]:
+                        best_overall = best_overall
+                    elif current_hand[0] < best_hand[0]:
+                        best_overall = current_overall
+                    elif current_hand[0] == best_hand[0]:
+                        if current_hand[2] > best_hand[2]:
+                            best_overall = current_overall
+                            ties = []
+                        elif current_hand[2] < best_hand[2]:
+                            best_overall = best_overall
+                        elif current_hand[2] == best_hand[2]:
+                            if current_hand[4] > best_hand[4]:
+                                best_overall = current_overall
+                                ties = []
+                            elif current_hand[4] < best_hand[4]:
+                                best_overall = best_overall
+                            else: 
+                                new_ties = [best_overall, current_overall]
+                                ties.extend(new_ties)
+        elif rank_player_one == 4 or 8:
+            best_hand = sorted([c[0] for c in best_overall], reverse = True)
+            if best_hand[0] - best_hand[4] == 12:
+                del best_hand[0]
+            current_hand = sorted([c[0] for c in current_overall], reverse = True)
+            if current_hand[0] - current_hand[4] == 12:
+                del current_hand[0]
+            if current_handcurrent_hand[0] > best_hand[0]:
+                best_overall = current_overall
+                ties = []
+            elif current_hand[0] < best_hand[0]:
+                best_overall = best_overall
+            else: 
+                new_ties = [best_overall, current_overall]
+                ties.extend(new_ties)
+    return best_overall, ties
+
+def three_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0
+    }    
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, len(list(itertools.combinations(deck, unknown_count)))
+
+def three_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0
+    }    
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0
+    }
+        
+    combinations = list(itertools.combinations(deck, unknown_count))
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, 1000
+
+def four_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0
+    }    
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four])
+        best_overall = hand_info_player_one
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, len(list(itertools.combinations(deck, unknown_count)))
+
+def four_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0
+    }    
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0
+    }
+    combinations = list(itertools.combinations(deck, unknown_count))
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four])
+        best_overall = hand_info_player_one
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, 1000   
+
+def five_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five])
+        best_overall = hand_info_player_one
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, len(list(itertools.combinations(deck, unknown_count)))
+
+def five_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five])
+        best_overall = hand_info_player_one
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, 1000       
+
+def six_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six])
+        best_overall = hand_info_player_one
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1            
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, len(list(itertools.combinations(deck, unknown_count)))
+
+def six_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six])
+        best_overall = hand_info_player_one
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1            
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+        elif len(ties) == 10:
+            tie_type["six_way_ties"] += 1
+            if hand_info_player_one in ties:
+                six_way_ties["six_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                six_way_ties["six_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                six_way_ties["six_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["six_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["six_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["six_way_ties_player_six"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, 1000
+
+def seven_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0        
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, len(list(itertools.combinations(deck, unknown_count)))    
+def seven_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0        
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0
+    }   
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, 1000
+
+def eight_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, known_cards_Hand_eight, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + known_cards_Hand_eight + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    known_cards_Hand_eight = known_cards_Hand_eight + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0,
+        "player_eight": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0,
+        "two_way_ties_player_eight": 0  
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0,
+        "three_way_ties_player_eight": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0,
+    "four_way_ties_player_eight": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0,
+    "five_way_ties_player_eight": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        seven_cards_player_eight = list(known_cards_Hand_eight) + list(combo)
+        hand_info_player_eight= best_rank_and_hand(seven_cards_player_eight)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven, hand_info_player_eight])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_eight
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+            if hand_info_player_eight in ties:
+                two_way_ties["two_way_ties_player_eight"] += 1 
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                three_way_ties["three_way_ties_player_eight"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                five_way_ties["five_way_ties_player_eight"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+        elif best_overall == hand_info_player_eight:
+            rankings["player_eight"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, len(list(itertools.combinations(deck, unknown_count)))      
+
+def eight_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, known_cards_Hand_eight, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + known_cards_Hand_eight + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    known_cards_Hand_eight = known_cards_Hand_eight + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0,
+        "player_eight": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0,
+        "two_way_ties_player_eight": 0  
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0,
+        "three_way_ties_player_eight": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0,
+    "four_way_ties_player_eight": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0,
+    "five_way_ties_player_eight": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        seven_cards_player_eight = list(known_cards_Hand_eight) + list(combo)
+        hand_info_player_eight= best_rank_and_hand(seven_cards_player_eight)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven, hand_info_player_eight])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_eight
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+            if hand_info_player_eight in ties:
+                two_way_ties["two_way_ties_player_eight"] += 1 
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                three_way_ties["three_way_ties_player_eight"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                five_way_ties["five_way_ties_player_eight"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+        elif best_overall == hand_info_player_eight:
+            rankings["player_eight"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, 1000
+
+def nine_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, known_cards_Hand_eight, known_cards_Hand_nine, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + known_cards_Hand_eight + known_cards_Hand_nine + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    known_cards_Hand_eight = known_cards_Hand_eight + Group_cards
+    known_cards_Hand_nine = known_cards_Hand_nine + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0,
+        "player_eight": 0,
+        "player_nine": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0,
+        "two_way_ties_player_eight": 0,
+        "two_way_ties_player_nine": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0,
+        "three_way_ties_player_eight": 0,
+        "three_way_ties_player_nine": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0,
+    "four_way_ties_player_eight": 0,
+    "four_way_ties_player_nine": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0,
+    "five_way_ties_player_eight": 0,
+    "five_way_ties_player_nine": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        seven_cards_player_eight = list(known_cards_Hand_eight) + list(combo)
+        hand_info_player_eight= best_rank_and_hand(seven_cards_player_eight)
+        seven_cards_player_nine = list(known_cards_Hand_nine) + list(combo)
+        hand_info_player_nine= best_rank_and_hand(seven_cards_player_nine)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven, hand_info_player_eight, hand_info_player_nine])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_eight
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_nine
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+            if hand_info_player_eight in ties:
+                two_way_ties["two_way_ties_player_eight"] += 1 
+            if hand_info_player_ninet in ties:
+                two_way_ties["two_way_ties_player_nine"] += 1 
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                three_way_ties["three_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                three_way_ties["three_way_ties_player_nine"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                five_way_ties["five_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                five_way_ties["five_way_ties_player_nine"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+        elif best_overall == hand_info_player_eight:
+            rankings["player_eight"] += 1
+        elif best_overall == hand_info_player_nine:
+            rankings["player_nine"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, len(list(itertools.combinations(deck, unknown_count)))      
+
+def nine_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, known_cards_Hand_eight, known_cards_Hand_nine, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + known_cards_Hand_eight + known_cards_Hand_nine + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    known_cards_Hand_eight = known_cards_Hand_eight + Group_cards
+    known_cards_Hand_nine = known_cards_Hand_nine + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0,
+        "player_eight": 0,
+        "player_nine": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0,
+        "two_way_ties_player_eight": 0,
+        "two_way_ties_player_nine": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0,
+        "three_way_ties_player_eight": 0,
+        "three_way_ties_player_nine": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0,
+    "four_way_ties_player_eight": 0,
+    "four_way_ties_player_nine": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0,
+    "five_way_ties_player_eight": 0,
+    "five_way_ties_player_nine": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        seven_cards_player_eight = list(known_cards_Hand_eight) + list(combo)
+        hand_info_player_eight= best_rank_and_hand(seven_cards_player_eight)
+        seven_cards_player_nine = list(known_cards_Hand_nine) + list(combo)
+        hand_info_player_nine= best_rank_and_hand(seven_cards_player_nine)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven, hand_info_player_eight, hand_info_player_nine])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_eight
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_nine
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+            if hand_info_player_eight in ties:
+                two_way_ties["two_way_ties_player_eight"] += 1 
+            if hand_info_player_ninet in ties:
+                two_way_ties["two_way_ties_player_nine"] += 1 
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                three_way_ties["three_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                three_way_ties["three_way_ties_player_nine"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                five_way_ties["five_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                five_way_ties["five_way_ties_player_nine"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+        elif best_overall == hand_info_player_eight:
+            rankings["player_eight"] += 1
+        elif best_overall == hand_info_player_nine:
+            rankings["player_nine"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, 1000     
+
+def ten_hands_compared(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, known_cards_Hand_eight, known_cards_Hand_nine, known_cards_Hand_ten, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + known_cards_Hand_eight + known_cards_Hand_nine + known_cards_Hand_ten + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    known_cards_Hand_eight = known_cards_Hand_eight + Group_cards
+    known_cards_Hand_nine = known_cards_Hand_nine + Group_cards
+    kown_cards_Hand_ten = known_cards_Hand_ten + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0,
+        "player_eight": 0,
+        "player_nine": 0,
+        "player_ten": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0,
+        "two_way_ties_player_eight": 0,
+        "two_way_ties_player_nine": 0,
+        "two_way_ties_player_ten": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0,
+        "three_way_ties_player_eight": 0,
+        "three_way_ties_player_nine": 0,
+        "three_way_ties_player_ten": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0,
+    "four_way_ties_player_eight": 0,
+    "four_way_ties_player_nine": 0,
+    "four_way_ties_player_ten": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0,
+    "five_way_ties_player_eight": 0,
+    "five_way_ties_player_nine": 0,
+    "five_way_ties_player_ten": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for combo in itertools.combinations(deck, unknown_count):
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        seven_cards_player_eight = list(known_cards_Hand_eight) + list(combo)
+        hand_info_player_eight= best_rank_and_hand(seven_cards_player_eight)
+        seven_cards_player_nine = list(known_cards_Hand_nine) + list(combo)
+        hand_info_player_nine= best_rank_and_hand(seven_cards_player_nine)
+        seven_cards_player_ten = list(known_cards_Hand_ten) + list(combo)
+        hand_info_player_ten= best_rank_and_hand(seven_cards_player_ten)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven, hand_info_player_eight, hand_info_player_nine, hand_info_player_ten])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_eight
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_nine
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_ten
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+            if hand_info_player_eight in ties:
+                two_way_ties["two_way_ties_player_eight"] += 1 
+            if hand_info_player_nine in ties:
+                two_way_ties["two_way_ties_player_nine"] += 1 
+            if hand_info_player_ten in ties:
+                two_way_ties["two_way_ties_player_ten"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                three_way_ties["three_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                three_way_ties["three_way_ties_player_nine"] += 1
+            if hand_info_player_ten in ties:
+                three_way_ties["three_way_ties_player_ten"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                four_way_ties["four_way_ties_player_nine"] += 1
+            if hand_info_player_ten in ties:
+                four_way_ties["four_way_ties_player_nine"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                five_way_ties["five_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                five_way_ties["five_way_ties_player_nine"] += 1
+            if hand_info_player_ten in ties:
+                five_way_ties["five_way_ties_player_ten"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+        elif best_overall == hand_info_player_eight:
+            rankings["player_eight"] += 1
+        elif best_overall == hand_info_player_nine:
+            rankings["player_nine"] += 1
+        elif best_overall == hand_info_player_ten:
+            rankings["player_ten"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, len(list(itertools.combinations(deck, unknown_count)))     
+
+def ten_hands_compared_1000_runs(known_cards_Hand_one, known_cards_Hand_two, known_cards_Hand_three, known_cards_Hand_four, known_cards_Hand_five, known_cards_Hand_six, known_cards_Hand_seven, known_cards_Hand_eight, known_cards_Hand_nine, known_cards_Hand_ten, Group_cards):
+    deck = card_list()
+    known_cards = known_cards_Hand_one + known_cards_Hand_two + known_cards_Hand_three + known_cards_Hand_four + known_cards_Hand_five + known_cards_Hand_six + known_cards_Hand_seven + known_cards_Hand_eight + known_cards_Hand_nine + known_cards_Hand_ten + Group_cards
+    deck = card_list()
+    deck = [card for card in deck if card not in known_cards]
+    known_cards_Hand_one = known_cards_Hand_one + Group_cards
+    known_cards_Hand_two = known_cards_Hand_two + Group_cards
+    known_cards_Hand_three = known_cards_Hand_three + Group_cards
+    known_cards_Hand_four = known_cards_Hand_four + Group_cards
+    known_cards_Hand_five = known_cards_Hand_five + Group_cards
+    known_cards_Hand_six = known_cards_Hand_six + Group_cards
+    known_cards_Hand_seven = known_cards_Hand_seven + Group_cards
+    known_cards_Hand_eight = known_cards_Hand_eight + Group_cards
+    known_cards_Hand_nine = known_cards_Hand_nine + Group_cards
+    kown_cards_Hand_ten = known_cards_Hand_ten + Group_cards
+    unknown_count = 5 - len(Group_cards)
+    rankings = {
+        "player_one": 0,
+        "player_two": 0,
+        "player_three": 0,
+        "player_four": 0,
+        "player_five": 0,
+        "player_six": 0,
+        "player_seven": 0,
+        "player_eight": 0,
+        "player_nine": 0,
+        "player_ten": 0
+    }
+    two_way_ties = {
+        "two_way_ties_player_one": 0,
+        "two_way_ties_player_two": 0,
+        "two_way_ties_player_three": 0,
+        "two_way_ties_player_four": 0,
+        "two_way_ties_player_five": 0,
+        "two_way_ties_player_six": 0,
+        "two_way_ties_player_seven": 0,
+        "two_way_ties_player_eight": 0,
+        "two_way_ties_player_nine": 0,
+        "two_way_ties_player_ten": 0
+    }
+    three_way_ties = {
+        "three_way_ties_player_one": 0,
+        "three_way_ties_player_two": 0,
+        "three_way_ties_player_three": 0,
+        "three_way_ties_player_four": 0,
+        "three_way_ties_player_five": 0,
+        "three_way_ties_player_six": 0,
+        "three_way_ties_player_seven": 0,
+        "three_way_ties_player_eight": 0,
+        "three_way_ties_player_nine": 0,
+        "three_way_ties_player_ten": 0
+    }    
+    four_way_ties = {
+    "four_way_ties_player_one": 0,
+    "four_way_ties_player_two": 0,
+    "four_way_ties_player_three": 0,
+    "four_way_ties_player_four": 0,
+    "four_way_ties_player_five": 0,
+    "four_way_ties_player_six": 0,
+    "four_way_ties_player_seven": 0,
+    "four_way_ties_player_eight": 0,
+    "four_way_ties_player_nine": 0,
+    "four_way_ties_player_ten": 0
+    }    
+    five_way_ties = {
+    "five_way_ties_player_one": 0,
+    "five_way_ties_player_two": 0,
+    "five_way_ties_player_three": 0,
+    "five_way_ties_player_four": 0,
+    "five_way_ties_player_five": 0,
+    "five_way_ties_player_six": 0,
+    "five_way_ties_player_seven": 0,
+    "five_way_ties_player_eight": 0,
+    "five_way_ties_player_nine": 0,
+    "five_way_ties_player_ten": 0
+    }  
+    tie_type = {
+        "two_way_ties": 0,
+        "three_way_ties": 0,
+        "four_way_ties": 0,
+        "five_way_ties": 0
+    }
+    
+    for i in range(1000):
+        combo = random.choice(combinations)
+        seven_cards_player_one = list(known_cards_Hand_one) + list(combo)
+        hand_info_player_one = best_rank_and_hand(seven_cards_player_one)
+        seven_cards_player_two = list(known_cards_Hand_two) + list(combo)
+        hand_info_player_two = best_rank_and_hand(seven_cards_player_two)
+        seven_cards_player_three = list(known_cards_Hand_three) + list(combo)
+        hand_info_player_three = best_rank_and_hand(seven_cards_player_three)
+        seven_cards_player_four = list(known_cards_Hand_four) + list(combo)
+        hand_info_player_four= best_rank_and_hand(seven_cards_player_four)
+        seven_cards_player_five = list(known_cards_Hand_five) + list(combo)
+        hand_info_player_five= best_rank_and_hand(seven_cards_player_five)
+        seven_cards_player_six = list(known_cards_Hand_six) + list(combo)
+        hand_info_player_six= best_rank_and_hand(seven_cards_player_six)
+        seven_cards_player_seven = list(known_cards_Hand_seven + list(combo)
+        hand_info_player_seven= best_rank_and_hand(seven_cards_player_seven)
+        seven_cards_player_eight = list(known_cards_Hand_eight) + list(combo)
+        hand_info_player_eight= best_rank_and_hand(seven_cards_player_eight)
+        seven_cards_player_nine = list(known_cards_Hand_nine) + list(combo)
+        hand_info_player_nine= best_rank_and_hand(seven_cards_player_nine)
+        seven_cards_player_ten = list(known_cards_Hand_ten) + list(combo)
+        hand_info_player_ten= best_rank_and_hand(seven_cards_player_ten)
+        competing_hands = ([hand_info_player_one, hand_info_player_two, hand_info_player_three, hand_info_player_four, hand_info_player_five, hand_info_player_six, hand_info_player_seven, hand_info_player_eight, hand_info_player_nine, hand_info_player_ten])
+        best_overall = hand_info_player_one
+        current_overall = hand_info_player_two
+        ties = []
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_three
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_four
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_five
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        current_overall = hand_info_player_six
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_seven
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_eight
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_nine
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        current_overall = hand_info_player_ten
+        better_hand_output = better_hand(best_overall, current_overall, ties)
+        best_overall = better_hand_output[0]
+        ties = better_hand_output[1]
+        if len(ties) == 2:
+            tie_type["two_way_ties"] += 1
+            if hand_info_player_one in ties:
+                two_way_ties["two_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                two_way_ties["two_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                two_way_ties["two_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                two_way_ties["two_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                two_way_ties["two_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                two_way_ties["two_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                two_way_ties["two_way_ties_player_seven"] += 1 
+            if hand_info_player_eight in ties:
+                two_way_ties["two_way_ties_player_eight"] += 1 
+            if hand_info_player_nine in ties:
+                two_way_ties["two_way_ties_player_nine"] += 1 
+            if hand_info_player_ten in ties:
+                two_way_ties["two_way_ties_player_ten"] += 1
+        elif len(ties) == 4:
+            tie_type["three_way_ties"] += 1
+            if hand_info_player_one in ties:
+                three_way_ties["three_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                three_way_ties["three_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                three_way_ties["three_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                three_way_ties["three_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                three_way_ties["three_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                three_way_ties["three_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                three_way_ties["three_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                three_way_ties["three_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                three_way_ties["three_way_ties_player_nine"] += 1
+            if hand_info_player_ten in ties:
+                three_way_ties["three_way_ties_player_ten"] += 1
+        elif len(ties) == 6:
+            tie_type["four_way_ties"] += 1
+            if hand_info_player_one in ties:
+                four_way_ties["four_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                four_way_ties["four_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                four_way_ties["four_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                four_way_ties["four_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                four_way_ties["four_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                four_way_ties["four_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                four_way_ties["four_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                four_way_ties["four_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                four_way_ties["four_way_ties_player_nine"] += 1
+            if hand_info_player_ten in ties:
+                four_way_ties["four_way_ties_player_nine"] += 1
+        elif len(ties) == 8:
+            tie_type["five_way_ties"] += 1
+            if hand_info_player_one in ties:
+                five_way_ties["five_way_ties_player_one"] += 1
+            if hand_info_player_two in ties:
+                five_way_ties["five_way_ties_player_two"] += 1
+            if hand_info_player_three in ties:
+                five_way_ties["five_way_ties_player_three"] += 1
+            if hand_info_player_four in ties:
+                five_way_ties["five_way_ties_player_four"] += 1
+            if hand_info_player_five in ties:
+                five_way_ties["five_way_ties_player_five"] += 1
+            if hand_info_player_six in ties:
+                five_way_ties["five_way_ties_player_six"] += 1
+            if hand_info_player_seven in ties:
+                five_way_ties["five_way_ties_player_seven"] += 1
+            if hand_info_player_eight in ties:
+                five_way_ties["five_way_ties_player_eight"] += 1
+            if hand_info_player_nine in ties:
+                five_way_ties["five_way_ties_player_nine"] += 1
+            if hand_info_player_ten in ties:
+                five_way_ties["five_way_ties_player_ten"] += 1
+        elif best_overall == hand_info_player_one:
+            rankings["player_one"] +=1
+        elif best_overall == hand_info_player_two:
+            rankings["player_two"] += 1
+        elif best_overall == hand_info_player_three:
+            rankings["player_three"] += 1
+        elif best_overall == hand_info_player_four:
+            rankings["player_four"] += 1
+        elif best_overall == hand_info_player_five:
+            rankings["player_five"] += 1
+        elif best_overall == hand_info_player_six:
+            rankings["player_six"] += 1
+        elif best_overall == hand_info_player_seven:
+            rankings["player_seven"] += 1
+        elif best_overall == hand_info_player_eight:
+            rankings["player_eight"] += 1
+        elif best_overall == hand_info_player_nine:
+            rankings["player_nine"] += 1
+        elif best_overall == hand_info_player_ten:
+            rankings["player_ten"] += 1
+    return rankings, tie_type, two_way_ties, three_way_ties, four_way_ties, five_way_ties, 1000 
