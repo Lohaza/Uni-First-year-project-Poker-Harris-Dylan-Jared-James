@@ -21,7 +21,7 @@ Windows:
 1. Open the Command Terminal. Abrivated as CMD on the windows search bar.
 
 2. If you have the folder on your device you can simply put the file path for pyproject.toml
-Example: "C:\Users\harri\OneDrive\Documents\Uni-First-year-project-Poker-Harris-Dylan-Jared-James\pyproject.toml"
+Example: "cd C:\Users\harri\OneDrive\Documents\Uni-First-year-project-Poker-Harris-Dylan-Jared-James\pyproject.toml"
 
 Once you have found the folder you can then use the command:
 
